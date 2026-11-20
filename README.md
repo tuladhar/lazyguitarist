@@ -135,6 +135,7 @@ This repo ships a [Claude Code](https://claude.com/claude-code) skill. Open Clau
 /preset Comfortably Numb
 /preset Iron Man - Black Sabbath
 /preset Hotel California solo
+/preset Enter Sandman
 ```
 
 It looks up how the guitarist got the tone on that recording (amp, pedals, delay time from the song's tempo),
