@@ -77,6 +77,7 @@ Match the style of the existing entries in `presets.json` (2-space indent, keys 
       "name": "Second solo (fuzz lead)",
       "description": "Gilmour-style: Big Muff into a clean, loud amp with long delay. Bend wide and let notes sing.",
       "level_db": 0,
+      "guitar": { "pickup": "bridge", "volume": 10, "tone1": 10, "tone2": 8 },
       "amp": { "model": "pre 12AT7/ push pull 6V6", "pregain": -2, "drive": -4 },
       "fx": {
         "muff": { "Tone": 0.55, "Level": 0.5 },
@@ -95,6 +96,10 @@ Match the style of the existing entries in `presets.json` (2-space indent, keys 
   volume swells, tuning). Say "X-style" or "inspired by": these are approximations, never claim it is the
   exact original rig.
 - Leave `level_db` at 0 for now. Step 6 sets it.
+- **`guitar`**: how to set the user's Strat (5-way selector, Volume, Tone 1 = neck, Tone 2 = middle/bridge),
+  shown under the chain. `pickup` is one of `bridge`, `bridge+middle`, `middle`, `middle+neck`, `neck`; knobs
+  are 0..10. Translate the original guitarist's pickup choice (Les Paul neck humbucker → `neck`, bridge → `bridge`;
+  Strat "quack" → `bridge+middle`/`middle+neck`), and roll a tone knob back for darker "woman tone" leads.
 - Don't set `on_off`, `pp`, `position` or `s_h`: lazyguitarix manages those.
 
 ## 5. Validate

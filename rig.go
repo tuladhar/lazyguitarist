@@ -17,8 +17,30 @@ type Part struct {
 	Name        string                    `json:"name"`
 	Description string                    `json:"description"`
 	LevelDB     float64                   `json:"level_db"`
+	Guitar      *Guitar                   `json:"guitar,omitempty"`
 	Amp         map[string]any            `json:"amp"`
 	FX          map[string]map[string]any `json:"fx"`
+}
+
+// Guitar is how to set the guitar itself for a part: a Strat-style 5-way pickup selector, one volume knob and two
+// tone knobs (tone1 = neck, tone2 = middle/bridge), each 0..10.
+type Guitar struct {
+	Pickup string  `json:"pickup"`
+	Volume float64 `json:"volume"`
+	Tone1  float64 `json:"tone1"`
+	Tone2  float64 `json:"tone2"`
+}
+
+// pickupPositions are the 5-way selector positions, bridge first (position 1).
+var pickupPositions = []string{"bridge", "bridge+middle", "middle", "middle+neck", "neck"}
+
+func pickupIndex(p string) int {
+	for i, v := range pickupPositions {
+		if v == p {
+			return i
+		}
+	}
+	return -1
 }
 
 type Song struct {

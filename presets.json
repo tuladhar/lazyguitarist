@@ -10,6 +10,12 @@
           "name": "Intro & verses (clean, ambient)",
           "description": "Gilmour-style clean: compressed for sustain, clean low-gain amp, long ~450 ms echo and a big hall reverb. Roll your guitar volume up from zero on the intro notes for swells.",
           "level_db": 21.5,
+          "guitar": {
+            "pickup": "middle+neck",
+            "volume": 10,
+            "tone1": 8,
+            "tone2": 8
+          },
           "amp": {
             "model": "pre 12AT7/ push pull 6V6",
             "pregain": -6,
@@ -49,6 +55,12 @@
           "name": "Solo (singing lead)",
           "description": "Smooth sustaining lead: compressor into a mild TS9 overdrive, slightly pushed amp, the same 450 ms echo a bit louder, plus reverb.",
           "level_db": 9.7,
+          "guitar": {
+            "pickup": "bridge",
+            "volume": 10,
+            "tone1": 10,
+            "tone2": 7
+          },
           "amp": {
             "model": "pre 12AT7/ push pull 6V6",
             "pregain": 0,
@@ -102,6 +114,12 @@
           "name": "Main riff (heavy)",
           "description": "Iommi-style: treble booster slammed into a high-gain amp with strong mids, 4x12 cab, noise gate, just a touch of room reverb.",
           "level_db": -21.8,
+          "guitar": {
+            "pickup": "bridge",
+            "volume": 10,
+            "tone1": 10,
+            "tone2": 10
+          },
           "amp": {
             "model": "12ax7",
             "pregain": 12,
@@ -136,6 +154,12 @@
           "name": "Solo (wah lead)",
           "description": "Riff tone plus an auto-wah (sweeps with how hard you pick) and a bit more reverb for the solo.",
           "level_db": -22.2,
+          "guitar": {
+            "pickup": "bridge",
+            "volume": 10,
+            "tone1": 10,
+            "tone2": 9
+          },
           "amp": {
             "model": "12ax7",
             "pregain": 12,
@@ -182,6 +206,12 @@
           "name": "Intro riff (crunch)",
           "description": "Slash-style: a cranked Marshall at medium gain with SRV-2000-ish plate reverb. Neck pickup, let each note ring into the next. Tuned down a half step (Eb Ab Db Gb Bb Eb), so the tuner's standard notes will read a semitone high.",
           "level_db": -15.1,
+          "guitar": {
+            "pickup": "neck",
+            "volume": 10,
+            "tone1": 7,
+            "tone2": 10
+          },
           "amp": {
             "model": "12ax7",
             "pregain": 7,
@@ -211,6 +241,12 @@
           "name": "Solo (neck lead)",
           "description": "Inspired by the first solo: same Marshall pushed harder with a TS9 for sustain and singing mids, a touch of reverb. Neck pickup, tone knob rolled back a bit. Eb tuning.",
           "level_db": -17.6,
+          "guitar": {
+            "pickup": "neck",
+            "volume": 10,
+            "tone1": 5,
+            "tone2": 10
+          },
           "amp": {
             "model": "12ax7",
             "pregain": 8,
@@ -245,6 +281,12 @@
           "name": "Outro solo (wah lead)",
           "description": "Slash-style \"Where do we go now\" lead: a Cry Baby (auto-wah here, standing in for rocking the pedal) into the hot Marshall. Bridge pickup, wide vibrato. Eb tuning.",
           "level_db": -18.9,
+          "guitar": {
+            "pickup": "bridge",
+            "volume": 10,
+            "tone1": 10,
+            "tone2": 8
+          },
           "amp": {
             "model": "12ax7",
             "pregain": 9,
@@ -288,9 +330,109 @@
       "album": "Atti Bhayo (2011)",
       "parts": [
         {
+          "name": "Intro (soft clean)",
+          "description": "Matched to the record's opening 12 s: a soft, warm clean tone with little treble, a quarter-note echo (161 BPM) and roomy reverb. Neck pickup, tone knob down a little, pick or strum gently. Tuned to standard (A440), key of G / E minor.",
+          "level_db": 23.0,
+          "guitar": {
+            "pickup": "neck",
+            "volume": 10,
+            "tone1": 6,
+            "tone2": 10
+          },
+          "amp": {
+            "model": "12ax7",
+            "pregain": -6,
+            "drive": -6
+          },
+          "fx": {
+            "compressor": {
+              "ratio": 3,
+              "threshold": -24,
+              "attack": 0.005,
+              "release": 0.3
+            },
+            "amp.tonestack": {
+              "select": "Fender",
+              "Bass": 0.55,
+              "Middle": 0.45,
+              "Treble": 0.4
+            },
+            "cab": {
+              "select": "1x12",
+              "bass": 0,
+              "treble": -2
+            },
+            "echo": {
+              "bpm": 161,
+              "percent": 15
+            },
+            "zita_rev1": {
+              "decay_times.mid_rt60": 2.2,
+              "decay_times.low_rt60": 2.2,
+              "output.dry_wet_mix": -0.6
+            }
+          }
+        },
+        {
+          "name": "Intro (electric lead)",
+          "description": "Matched to the band entry at 0:13: a clean amp with a little edge from a light TS9, mids forward, and a quarter-note echo at the song's 161 BPM. Neck pickup, let each note sustain.",
+          "level_db": -2.7,
+          "guitar": {
+            "pickup": "neck",
+            "volume": 10,
+            "tone1": 8,
+            "tone2": 10
+          },
+          "amp": {
+            "model": "12ax7",
+            "pregain": 0,
+            "drive": -2
+          },
+          "fx": {
+            "noise_gate": {
+              "threshold": 0.02
+            },
+            "compressor": {
+              "ratio": 3,
+              "threshold": -22,
+              "attack": 0.01,
+              "release": 0.4
+            },
+            "ts9sim": {
+              "drive": 0.25,
+              "level": -8,
+              "tone": 500
+            },
+            "amp.tonestack": {
+              "select": "Mesa Boogie",
+              "Bass": 0.5,
+              "Middle": 0.65,
+              "Treble": 0.45
+            },
+            "cab": {
+              "select": "2x12"
+            },
+            "echo": {
+              "bpm": 161,
+              "percent": 28
+            },
+            "zita_rev1": {
+              "decay_times.mid_rt60": 2.4,
+              "decay_times.low_rt60": 2.4,
+              "output.dry_wet_mix": -0.55
+            }
+          }
+        },
+        {
           "name": "Main riff (rock rhythm)",
-          "description": "Inspired by Albatross's modern-rock rhythm sound: a high-gain Mesa-voiced amp, tight and punchy, with a small room. Bridge pickup, palm-mute the chugs. No rig details were found for this recording, and standard tuning is assumed.",
-          "level_db": -14.1,
+          "description": "Matched to the full-band sections (from 0:40): a high-gain Mesa-voiced amp, tight and punchy, a bit darker on top, with a small room. Bridge pickup, palm-mute the chugs. Standard tuning.",
+          "level_db": -12.4,
+          "guitar": {
+            "pickup": "bridge",
+            "volume": 10,
+            "tone1": 10,
+            "tone2": 10
+          },
           "amp": {
             "model": "12ax7",
             "pregain": 10,
@@ -308,8 +450,8 @@
             "amp.tonestack": {
               "select": "Mesa Boogie",
               "Bass": 0.55,
-              "Middle": 0.5,
-              "Treble": 0.6
+              "Middle": 0.55,
+              "Treble": 0.5
             },
             "cab": {
               "select": "4x12"
@@ -323,8 +465,14 @@
         },
         {
           "name": "Solo (lead with delay)",
-          "description": "Rock lead in the Albatross style: a TS9 boost for sustain and mids, a pushed amp, and a ~380 ms delay sitting under the notes. Neck pickup for the melodic lines, with wide vibrato on the held notes.",
-          "level_db": -15.2,
+          "description": "Matched to the lead around 3:05: a TS9 boost into a pushed amp with strong mids (that's where the record's lead sits), and a quarter-note echo at 161 BPM. Neck pickup, wide vibrato on held notes.",
+          "level_db": -14.2,
+          "guitar": {
+            "pickup": "neck",
+            "volume": 10,
+            "tone1": 8,
+            "tone2": 10
+          },
           "amp": {
             "model": "12ax7",
             "pregain": 11,
@@ -342,14 +490,14 @@
             "amp.tonestack": {
               "select": "Mesa Boogie",
               "Bass": 0.55,
-              "Middle": 0.65,
-              "Treble": 0.6
+              "Middle": 0.8,
+              "Treble": 0.55
             },
             "cab": {
               "select": "4x12"
             },
             "echo": {
-              "bpm": 158,
+              "bpm": 161,
               "percent": 25
             },
             "zita_rev1": {

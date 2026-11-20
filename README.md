@@ -41,8 +41,10 @@ just editing a JSON file.
 | 5 | Guns N' Roses - *Sweet Child O' Mine* | Intro riff | gate › medium-gain Marshall (JCM-800 tonestack) › 4x12 › plate-style reverb |
 | 6 | | Solo | gate › TS9 › pushed Marshall › 4x12 › reverb |
 | 7 | | Outro solo | gate › auto-wah › TS9 › pushed Marshall (mids up) › 4x12 › reverb |
-| 8 | Albatross - *Nischal* | Main riff | gate › light TS9 › high-gain amp (Mesa Boogie tonestack) › 4x12 › room |
-| 9 | | Solo | gate › TS9 › pushed amp (mids up) › 4x12 › 380 ms echo › reverb |
+| 8 | Albatross - *Nischal* | Intro (soft clean) | compressor › warm clean amp › 1x12 › quarter-note echo (161 BPM) › reverb |
+| 9 | | Intro (electric lead) | gate › compressor › light TS9 › clean-edge amp › 2x12 › quarter-note echo (161 BPM) › reverb |
+| 10 | | Main riff | gate › light TS9 › high-gain amp (Mesa Boogie tonestack) › 4x12 › room |
+| 11 | | Solo | gate › TS9 › pushed amp (strong mids) › 4x12 › quarter-note echo (161 BPM) › reverb |
 
 These are by-ear approximations built from Guitarix's amp and pedal models, not copies of the original rigs.
 
@@ -157,6 +159,7 @@ binary, then the copy built into the binary. Each part looks like this:
   "name": "Solo (singing lead)",
   "description": "Shown in the Now playing panel.",
   "level_db": 9.7,
+  "guitar": { "pickup": "bridge", "volume": 10, "tone1": 10, "tone2": 7 },
   "amp": { "model": "pre 12AT7/ push pull 6V6", "pregain": 0, "drive": -4 },
   "fx": {
     "compressor": { "ratio": 5, "threshold": -28 },
@@ -175,6 +178,9 @@ binary, then the copy built into the binary. Each part looks like this:
   amp; `amp.tonestack`, `cab`, `echo` after it; `zita_rev1` reverb.
 - **`echo.bpm`** sets the echo time: one repeat every 60000/bpm ms (133 ≈ 451 ms; dotted eighth = tempo / 0.75).
 - **`level_db`** evens out loudness between parts (-40..40 dB).
+- **`guitar`** (optional) is shown under the chain: how to set a Strat-style guitar. `pickup` is the 5-way
+  selector (`bridge`, `bridge+middle`, `middle`, `middle+neck`, `neck`); `volume`, `tone1` (neck) and `tone2`
+  (middle/bridge) are knob numbers 0..10.
 
 Three helper commands make editing easy. Each runs a hidden Guitarix instance that never makes sound, so they're
 safe while you play:

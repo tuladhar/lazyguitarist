@@ -185,6 +185,16 @@ func validateCmd(songs []Song, from string) int {
 			if p.LevelDB < -40 || p.LevelDB > 40 {
 				probs = append(probs, fmt.Sprintf("level_db %g is out of range -40 .. 40", p.LevelDB))
 			}
+			if g := p.Guitar; g != nil {
+				if pickupIndex(g.Pickup) < 0 {
+					probs = append(probs, fmt.Sprintf("guitar.pickup %q: use one of %s", g.Pickup, strings.Join(pickupPositions, ", ")))
+				}
+				for k, v := range map[string]float64{"volume": g.Volume, "tone1": g.Tone1, "tone2": g.Tone2} {
+					if v < 0 || v > 10 {
+						probs = append(probs, fmt.Sprintf("guitar.%s %g is out of range 0 .. 10", k, v))
+					}
+				}
+			}
 			for k, v := range p.Amp {
 				id, ok := ampKeys[k]
 				if !ok {

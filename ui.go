@@ -278,6 +278,9 @@ func (m model) mainView(w int) string {
 		}
 		np = append(np, lipgloss.NewStyle().Foreground(cMuted).Width(npW-6).Render(desc), "")
 		np = append(np, pills(chainLabels(r.CurPart), npW-6))
+		if g := r.CurPart.Guitar; g != nil {
+			np = append(append(np, ""), guitarView(g)...)
+		}
 	}
 	if r.Bypass {
 		np = append(np, "", sBadge.Render("BYPASS · dry guitar"))
@@ -473,4 +476,32 @@ func abs(x int) int {
 		return -x
 	}
 	return x
+}
+
+// guitarView shows how to set the guitar for a part: the 5-way pickup selector and the three knobs.
+func guitarView(g *Guitar) []string {
+	label := lipgloss.NewStyle().Foreground(cMuted).Width(9)
+	sel := pickupIndex(g.Pickup)
+	var dots []string
+	for i := range pickupPositions {
+		if i == sel {
+			dots = append(dots, sActive.Render("●"))
+		} else {
+			dots = append(dots, lipgloss.NewStyle().Foreground(cFaint).Render("○"))
+		}
+	}
+	knob := func(v float64) string {
+		n := int(math.Round(v))
+		n = max(0, min(10, n))
+		return sKey.Render(strings.Repeat("█", n)) + lipgloss.NewStyle().Foreground(cFaint).Render(strings.Repeat("░", 10-n)) +
+			sText.Render(fmt.Sprintf(" %g", v))
+	}
+	return []string{
+		sHead.Render("Guitar"),
+		"",
+		label.Render("PICKUP") + sMuted.Render("bridge ") + strings.Join(dots, " ") + sMuted.Render(" neck   ") + sBold.Render(g.Pickup),
+		label.Render("VOLUME") + knob(g.Volume),
+		label.Render("TONE 1") + knob(g.Tone1) + sMuted.Render("  neck"),
+		label.Render("TONE 2") + knob(g.Tone2) + sMuted.Render("  middle · bridge"),
+	}
 }
