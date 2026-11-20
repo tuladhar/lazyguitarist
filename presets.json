@@ -172,6 +172,115 @@
           }
         }
       ]
+    },
+    {
+      "artist": "Guns N' Roses",
+      "song": "Sweet Child O' Mine",
+      "album": "Appetite for Destruction (1987)",
+      "parts": [
+        {
+          "name": "Intro riff (crunch)",
+          "description": "Slash-style: a cranked Marshall at medium gain with SRV-2000-ish plate reverb. Neck pickup, let each note ring into the next. Tuned down a half step (Eb Ab Db Gb Bb Eb), so the tuner's standard notes will read a semitone high.",
+          "level_db": -15.1,
+          "amp": {
+            "model": "12ax7",
+            "pregain": 7,
+            "drive": 2
+          },
+          "fx": {
+            "noise_gate": {
+              "threshold": 0.02
+            },
+            "amp.tonestack": {
+              "select": "JCM-800",
+              "Bass": 0.45,
+              "Middle": 0.7,
+              "Treble": 0.6
+            },
+            "cab": {
+              "select": "4x12"
+            },
+            "zita_rev1": {
+              "decay_times.mid_rt60": 2.0,
+              "decay_times.low_rt60": 2.0,
+              "output.dry_wet_mix": -0.6
+            }
+          }
+        },
+        {
+          "name": "Solo (neck lead)",
+          "description": "Inspired by the first solo: same Marshall pushed harder with a TS9 for sustain and singing mids, a touch of reverb. Neck pickup, tone knob rolled back a bit. Eb tuning.",
+          "level_db": -17.6,
+          "amp": {
+            "model": "12ax7",
+            "pregain": 8,
+            "drive": 3
+          },
+          "fx": {
+            "noise_gate": {
+              "threshold": 0.03
+            },
+            "ts9sim": {
+              "drive": 0.3,
+              "level": -6,
+              "tone": 550
+            },
+            "amp.tonestack": {
+              "select": "JCM-800",
+              "Bass": 0.45,
+              "Middle": 0.7,
+              "Treble": 0.6
+            },
+            "cab": {
+              "select": "4x12"
+            },
+            "zita_rev1": {
+              "decay_times.mid_rt60": 2.0,
+              "decay_times.low_rt60": 2.0,
+              "output.dry_wet_mix": -0.65
+            }
+          }
+        },
+        {
+          "name": "Outro solo (wah lead)",
+          "description": "Slash-style \"Where do we go now\" lead: a Cry Baby (auto-wah here, standing in for rocking the pedal) into the hot Marshall. Bridge pickup, wide vibrato. Eb tuning.",
+          "level_db": -18.9,
+          "amp": {
+            "model": "12ax7",
+            "pregain": 9,
+            "drive": 4
+          },
+          "fx": {
+            "noise_gate": {
+              "threshold": 0.03
+            },
+            "crybaby": {
+              "autowah": "auto",
+              "level": 0.3,
+              "wet_dry": 100
+            },
+            "ts9sim": {
+              "drive": 0.3,
+              "level": -6,
+              "tone": 500
+            },
+            "amp.tonestack": {
+              "select": "JCM-800",
+              "Bass": 0.45,
+              "Middle": 0.75,
+              "Treble": 0.6
+            },
+            "cab": {
+              "select": "4x12"
+            },
+            "zita_rev1": {
+              "decay_times.mid_rt60": 2.0,
+              "decay_times.low_rt60": 2.0,
+              "output.dry_wet_mix": -0.65
+            }
+          }
+        }
+      ]
     }
   ]
 }
