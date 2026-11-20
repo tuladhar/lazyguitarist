@@ -31,6 +31,24 @@ Good sources are rig rundowns, Equipboard, interviews, and gear forums for the b
 - **Tuning:** if it isn't standard E (e.g. Sabbath often tuned down, drop D songs), mention it in the
   `description`, since lazyguitarix's tuner shows standard tuning.
 
+### If the user gives an audio file of the song
+
+Learn from the recording itself; it beats web research, especially for smaller bands. Convert it to mono WAV
+with `ffmpeg` in the scratchpad, and analyze it with Python (`librosa`, in a scratchpad venv, run with `-I`):
+
+- **Tempo** (`librosa.beat.beat_track`), and the delay time from the autocorrelation of the onset envelope in
+  each section: repeats a beat apart mean a quarter-note echo; other spacings give `bpm` = 60000 / ms.
+- **Tuning and key:** `librosa.estimate_tuning` (near 0 means A440) and the mean chroma.
+- **Sections:** RMS, spectral centroid and flatness every 5 s (and every 1 s for the intro) show where the
+  intro, verses, choruses and solo are. Quiet, no drums and a low centroid means a soft clean part; high
+  flatness means distortion.
+- **Tone per section:** run harmonic/percussive separation (`librosa.effects.hpss`) and compare band
+  energies (60 Hz–11 kHz in octaves) on the harmonic part. Dark sections get less treble, and a strong
+  400 Hz–1.6 kHz bump means a mid-forward lead (TS9 and `Middle` up).
+
+Make one part per distinct section, say in each `description` which part of the record it was matched to
+(e.g. "Matched to the verse at 0:25"), and tell the user what you measured.
+
 ## 3. Map the rig onto lazyguitarix's building blocks
 
 Only these effects exist (in signal order). Run `./lazyguitarix --params units` to confirm:
@@ -123,8 +141,8 @@ each part, so the new song is as loud as the others. Copy those values into the 
 
 ## 7. Update the README
 
-Add the new parts to the **Included presets** table in `README.md`. Number them continuing from the last
-row, with a short chain summary like the existing rows.
+Add the new parts to the **Included presets** table in `README.md`. The `Key` column restarts at 1
+for each song (number keys pick parts of the current song), with a short chain summary like the existing rows.
 
 ## 8. Tell the user
 
@@ -133,7 +151,7 @@ Give a short summary:
 - the song and parts added, with each chain in one line;
 - any non-standard tuning;
 - that they need to restart `lazyguitarix` (or `go build -o lazyguitarix .` first if they run the binary), then
-  press the new numbers to play.
+  pick the song and press `1`, `2`, `3`… for its parts.
 
 The presets are educated guesses from research. Invite them to say "darker", "more gain", "less
 echo", etc., and adjust the preset, then re-run steps 5–6.

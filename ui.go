@@ -129,9 +129,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "enter", " ":
 			r.Apply(m.items[m.sel].song, m.items[m.sel].part)
 		case "1", "2", "3", "4", "5", "6", "7", "8", "9":
-			if i := int(k[0] - '1'); i < len(m.items) {
-				m.sel = i
-				r.Apply(m.items[i].song, m.items[i].part)
+			// numbers pick a part of the song under the cursor, so every song has its own 1, 2, 3…
+			song := m.items[m.sel].song
+			if i := int(k[0] - '1'); i < len(song.Parts) {
+				for j, it := range m.items {
+					if it.part == &song.Parts[i] {
+						m.sel = j
+					}
+				}
+				r.Apply(song, &song.Parts[i])
 			}
 		case "t":
 			m.tuner, m.freq = true, 0
@@ -177,7 +183,10 @@ func (m model) View() string {
 	if m.tuner {
 		body = m.tunerView(w)
 	} else {
-		body = m.mainView(w)
+		// Keep the whole screen within the terminal height: if it is taller, the terminal drops the top lines,
+		// and with them the header (and its ● REC indicator).
+		footer := m.footer(w)
+		body = m.mainView(w, m.h-2-1-2-lipgloss.Height(footer))
 	}
 	out := lipgloss.JoinVertical(lipgloss.Left, m.header(w), "", body, "", m.footer(w))
 	return lipgloss.NewStyle().Padding(1, 2).Render(out)
@@ -203,7 +212,7 @@ func (m model) footer(w int) string {
 	if m.tuner {
 		help = keyHelp([][2]string{{"any key", "back"}, {"ctrl+c", "quit"}})
 	} else {
-		help = keyHelp([][2]string{{"↑↓ ⏎", "load"}, {"1-9", "quick"}, {"t", "tuner"}, {"r", "record"},
+		help = keyHelp([][2]string{{"↑↓ ⏎", "load"}, {"1-9", "part"}, {"t", "tuner"}, {"r", "record"},
 			{"b", "bypass"}, {"-/+", "volume"}, {"[/]", "gain"}, {"i/o", "devices"}, {"l", "buffer"}, {"q", "quit"}})
 	}
 	credit := sMuted.Render("made with ") + lipgloss.NewStyle().Foreground(cPink).Render("♥") +
@@ -222,7 +231,9 @@ func keyHelp(keys [][2]string) string {
 	return strings.Join(parts, sMuted.Render("  ·  "))
 }
 
-func (m model) mainView(w int) string {
+// mainView draws the presets, now playing and rig panels in at most maxH lines; the presets list scrolls to keep
+// the selected part in view.
+func (m model) mainView(w, maxH int) string {
 	r := m.rig
 	inner := w - 4
 	wide := inner >= 84
@@ -233,6 +244,7 @@ func (m model) mainView(w int) string {
 
 	// presets list
 	var lines []string
+	selLine := 0
 	n := 0
 	for si, s := range m.songs {
 		if si > 0 {
@@ -242,7 +254,7 @@ func (m model) mainView(w int) string {
 		for pi := range s.Parts {
 			p := &m.songs[si].Parts[pi]
 			active := r.CurPart == p
-			num := fmt.Sprintf(" %d ", n+1)
+			num := fmt.Sprintf(" %d ", pi+1)
 			name := truncate(p.Name, listW-10)
 			marker := "  "
 			if active {
@@ -252,6 +264,7 @@ func (m model) mainView(w int) string {
 			switch {
 			case n == m.sel:
 				row = marker + sSel.Render(num+name+strings.Repeat(" ", max(0, listW-8-lipgloss.Width(num+name))))
+				selLine = len(lines)
 			case active:
 				row = marker + sActive.Render(num+name)
 			default:
@@ -261,8 +274,6 @@ func (m model) mainView(w int) string {
 			n++
 		}
 	}
-	presets := sPanel.Width(listW - 2).Render(sHead.Render("Presets") + "\n\n" + strings.Join(lines, "\n"))
-
 	// now playing
 	npW := inner
 	if wide {
@@ -287,16 +298,6 @@ func (m model) mainView(w int) string {
 	}
 	nowPlaying := sPanel.Width(npW - 2).Render(strings.Join(np, "\n"))
 
-	var top string
-	if wide {
-		h := max(lipgloss.Height(presets), lipgloss.Height(nowPlaying))
-		top = lipgloss.JoinHorizontal(lipgloss.Top,
-			sPanel.Width(listW-2).Height(h-2).Render(sHead.Render("Presets")+"\n\n"+strings.Join(lines, "\n")), " ",
-			sPanel.Width(npW-2).Height(h-2).Render(strings.Join(np, "\n")))
-	} else {
-		top = lipgloss.JoinVertical(lipgloss.Left, presets, nowPlaying)
-	}
-
 	// rig panel
 	gain := r.InputGain()
 	gainTxt := "?"
@@ -319,6 +320,25 @@ func (m model) mainView(w int) string {
 		rigLines = append(rigLines, "", st.Width(inner-6).Render(r.Status))
 	}
 	rigPanel := sPanel.Width(inner - 2).Render(strings.Join(rigLines, "\n"))
+
+	// fit the top panels into what is left; a panel's border and heading take 4 lines
+	avail := maxH - lipgloss.Height(rigPanel) - 1
+	var top string
+	if wide {
+		npLines := strings.Split(strings.Join(np, "\n"), "\n")
+		if len(npLines) > avail-2 {
+			npLines = npLines[:max(1, avail-2)]
+		}
+		list := scrollLines(lines, selLine, avail-4)
+		h := max(len(list)+4, len(npLines)+2)
+		top = lipgloss.JoinHorizontal(lipgloss.Top,
+			sPanel.Width(listW-2).Height(h-2).Render(sHead.Render("Presets")+"\n\n"+strings.Join(list, "\n")), " ",
+			sPanel.Width(npW-2).Height(h-2).Render(strings.Join(npLines, "\n")))
+	} else {
+		list := scrollLines(lines, selLine, avail-lipgloss.Height(nowPlaying)-4)
+		presets := sPanel.Width(listW - 2).Render(sHead.Render("Presets") + "\n\n" + strings.Join(list, "\n"))
+		top = lipgloss.JoinVertical(lipgloss.Left, presets, nowPlaying)
+	}
 
 	return lipgloss.JoinVertical(lipgloss.Left, top, rigPanel)
 }
@@ -504,4 +524,21 @@ func guitarView(g *Guitar) []string {
 		label.Render("TONE 1") + knob(g.Tone1) + sMuted.Render("  neck"),
 		label.Render("TONE 2") + knob(g.Tone2) + sMuted.Render("  middle · bridge"),
 	}
+}
+
+// scrollLines returns at most n lines of lines, scrolled so line sel stays visible, with ↑/↓ marks where it is cut.
+func scrollLines(lines []string, sel, n int) []string {
+	n = max(n, 3)
+	if len(lines) <= n {
+		return lines
+	}
+	start := max(0, min(sel-n/2, len(lines)-n))
+	out := append([]string(nil), lines[start:start+n]...)
+	if start > 0 {
+		out[0] = sMuted.Render("  ↑ more")
+	}
+	if start+n < len(lines) {
+		out[n-1] = sMuted.Render("  ↓ more")
+	}
+	return out
 }

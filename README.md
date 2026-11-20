@@ -16,7 +16,7 @@ just editing a JSON file.
 
 ## Features
 
-- **Song presets.** Each part of a song gets its own effect chain, and `1`–`9` switches parts instantly, e.g.
+- **Song presets.** Each part of a song gets its own effect chain, and `1`–`9` switches between the parts of the song you're on, e.g.
   clean verse → solo. All presets are evened out to the same loudness, so switching never blasts your ears.
 - **Tuner.** Standard tuning (E A D G B E). It tells you which string you're on and whether to **tighten** or
   **loosen** it, and by how much. The amp is muted while you tune, and 50/60 Hz cable hum is ignored.
@@ -32,19 +32,23 @@ just editing a JSON file.
 
 ### Included presets
 
-| # | Song | Part | Chain |
+| Key | Song | Part | Chain |
 |---|---|---|---|
 | 1 | Pink Floyd - *Coming Back to Life* | Intro & verses | compressor › clean amp › Twin tonestack › 4x12 › 450 ms echo › hall reverb |
 | 2 | | Solo | gate › compressor › TS9 › pushed amp › 4x12 › 450 ms echo › reverb |
-| 3 | Black Sabbath - *N.I.B.* | Main riff | gate › Rangemaster treble booster › high-gain amp (JCM-800 tonestack, mids up) › 4x12 › room |
-| 4 | | Solo | same + auto-wah |
-| 5 | Guns N' Roses - *Sweet Child O' Mine* | Intro riff | gate › medium-gain Marshall (JCM-800 tonestack) › 4x12 › plate-style reverb |
-| 6 | | Solo | gate › TS9 › pushed Marshall › 4x12 › reverb |
-| 7 | | Outro solo | gate › auto-wah › TS9 › pushed Marshall (mids up) › 4x12 › reverb |
-| 8 | Albatross - *Nischal* | Intro (soft clean) | compressor › warm clean amp › 1x12 › quarter-note echo (161 BPM) › reverb |
-| 9 | | Intro (electric lead) | gate › compressor › light TS9 › clean-edge amp › 2x12 › quarter-note echo (161 BPM) › reverb |
-| 10 | | Main riff | gate › light TS9 › high-gain amp (Mesa Boogie tonestack) › 4x12 › room |
-| 11 | | Solo | gate › TS9 › pushed amp (strong mids) › 4x12 › quarter-note echo (161 BPM) › reverb |
+| 1 | Black Sabbath - *N.I.B.* | Main riff | gate › Rangemaster treble booster › high-gain amp (JCM-800 tonestack, mids up) › 4x12 › room |
+| 2 | | Solo | same + auto-wah |
+| 1 | Guns N' Roses - *Sweet Child O' Mine* | Intro riff | gate › medium-gain Marshall (JCM-800 tonestack) › 4x12 › plate-style reverb |
+| 2 | | Solo | gate › TS9 › pushed Marshall › 4x12 › reverb |
+| 3 | | Outro solo | gate › auto-wah › TS9 › pushed Marshall (mids up) › 4x12 › reverb |
+| 1 | Albatross - *Nischal* | Intro (soft clean) | compressor › warm clean amp › 1x12 › quarter-note echo (161 BPM) › reverb |
+| 2 | | Intro (electric lead) | gate › compressor › light TS9 › clean-edge amp › 2x12 › quarter-note echo (161 BPM) › reverb |
+| 3 | | Main riff | gate › light TS9 › high-gain amp (Mesa Boogie tonestack) › 4x12 › room |
+| 4 | | Solo | gate › TS9 › pushed amp (strong mids) › 4x12 › quarter-note echo (161 BPM) › reverb |
+| 1 | Albatross - *Timi Bhane* | Intro | gate › light TS9 › lightly driven amp (JCM-800, mids up) › 2x12 › ~630 ms echo › reverb |
+| 2 | | Verse | compressor › soft clean amp (Fender tonestack) › 2x12 › faint quarter-note echo (147 BPM) › room |
+| 3 | | Chorus | gate › light TS9 › high-gain amp (Mesa Boogie tonestack) › 4x12 › room |
+| 4 | | Solo | gate › TS9 › pushed amp (strong mids) › 4x12 › quarter-note echo (147 BPM) › reverb |
 
 These are by-ear approximations built from Guitarix's amp and pedal models, not copies of the original rigs.
 
@@ -93,7 +97,8 @@ lazyguitarix --check    # list audio devices and what lazyguitarix would use
 
 | Key | Action |
 |---|---|
-| `↑`/`↓` + `Enter`, or `1`–`9` | load a preset |
+| `↑`/`↓` + `Enter` | load a preset (any song) |
+| `1`–`9` | load part 1–9 of the current song |
 | `t` | tuner (any key goes back) |
 | `r` | start / stop recording |
 | `b` | bypass all effects (dry guitar) |
@@ -144,8 +149,17 @@ This repo ships a [Claude Code](https://claude.com/claude-code) skill. Open Clau
 
 It looks up how the guitarist got the tone on that recording (amp, pedals, delay time from the song's tempo),
 builds parts like "Main riff" and "Solo" from lazyguitarix's effects, checks every setting against Guitarix, matches
-the loudness to your other presets, and adds the song to the README table. Restart `lazyguitarix` and press the new
-number. Not quite right? Just say "darker", "more gain" or "less echo".
+the loudness to your other presets, and adds the song to the README table. Restart `lazyguitarix`, pick the song and press
+`1`, `2`, `3`… for its parts. Not quite right? Just say "darker", "more gain" or "less echo".
+
+**Works best with the original song.** Give the path to an MP3 of the recording and the skill learns from it:
+tempo (so echoes land on the beat), tuning and key, where the intro, verse, chorus and solo are, and how bright,
+dark or distorted each one is. Without it, the preset is built from web research alone, which for many bands
+(especially smaller or local ones) has little to go on.
+
+```
+/preset Timi Bhane by Albatross ~/Downloads/Timi Bhane.mp3
+```
 
 The skill lives in [`.claude/skills/preset/SKILL.md`](.claude/skills/preset/SKILL.md).
 

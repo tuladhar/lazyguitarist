@@ -508,6 +508,183 @@
           }
         }
       ]
+    },
+    {
+      "artist": "Albatross",
+      "song": "Timi Bhane",
+      "album": "Jo Jas Sanga Sambandhit Chha (2005)",
+      "parts": [
+        {
+          "name": "Intro (mid-forward lead)",
+          "description": "Matched to the record's opening 0:00–0:22: a lightly driven, mid-forward tone with a long ~630 ms echo (repeats land a dotted quarter apart). Bridge+middle pickups, let the notes ring. Standard tuning (A440), key of A / F# minor.",
+          "level_db": -13.8,
+          "guitar": {
+            "pickup": "bridge+middle",
+            "volume": 10,
+            "tone1": 10,
+            "tone2": 9
+          },
+          "amp": {
+            "model": "12ax7",
+            "pregain": 2,
+            "drive": 0
+          },
+          "fx": {
+            "noise_gate": {
+              "threshold": 0.02
+            },
+            "ts9sim": {
+              "drive": 0.2,
+              "level": -8,
+              "tone": 550
+            },
+            "amp.tonestack": {
+              "select": "JCM-800",
+              "Bass": 0.45,
+              "Middle": 0.7,
+              "Treble": 0.6
+            },
+            "cab": {
+              "select": "2x12"
+            },
+            "echo": {
+              "bpm": 95,
+              "percent": 25
+            },
+            "zita_rev1": {
+              "decay_times.mid_rt60": 2.0,
+              "decay_times.low_rt60": 2.0,
+              "output.dry_wet_mix": -0.6
+            }
+          }
+        },
+        {
+          "name": "Verse (soft clean)",
+          "description": "Matched to the verse at 0:25: a soft, dark clean tone with a gentle compressor, a faint quarter-note echo (147 BPM) and a little room. Middle+neck pickups, tone rolled back slightly, play lightly.",
+          "level_db": 17.5,
+          "guitar": {
+            "pickup": "middle+neck",
+            "volume": 10,
+            "tone1": 7,
+            "tone2": 8
+          },
+          "amp": {
+            "model": "12ax7",
+            "pregain": -6,
+            "drive": -6
+          },
+          "fx": {
+            "compressor": {
+              "ratio": 3,
+              "threshold": -24,
+              "attack": 0.005,
+              "release": 0.3
+            },
+            "amp.tonestack": {
+              "select": "Fender",
+              "Bass": 0.55,
+              "Middle": 0.4,
+              "Treble": 0.45
+            },
+            "cab": {
+              "select": "2x12"
+            },
+            "echo": {
+              "bpm": 147,
+              "percent": 15
+            },
+            "zita_rev1": {
+              "decay_times.mid_rt60": 1.8,
+              "decay_times.low_rt60": 1.8,
+              "output.dry_wet_mix": -0.65
+            }
+          }
+        },
+        {
+          "name": "Chorus (distorted rhythm)",
+          "description": "Matched to the heavy choruses (around 1:40–2:10): a high-gain Mesa-voiced amp with a light TS9 to tighten it, bright and full, with a small room. Bridge pickup, dig in.",
+          "level_db": -14.4,
+          "guitar": {
+            "pickup": "bridge",
+            "volume": 10,
+            "tone1": 10,
+            "tone2": 10
+          },
+          "amp": {
+            "model": "12ax7",
+            "pregain": 10,
+            "drive": 3
+          },
+          "fx": {
+            "noise_gate": {
+              "threshold": 0.03
+            },
+            "ts9sim": {
+              "drive": 0.1,
+              "level": -8,
+              "tone": 600
+            },
+            "amp.tonestack": {
+              "select": "Mesa Boogie",
+              "Bass": 0.55,
+              "Middle": 0.6,
+              "Treble": 0.6
+            },
+            "cab": {
+              "select": "4x12"
+            },
+            "zita_rev1": {
+              "decay_times.mid_rt60": 1.5,
+              "decay_times.low_rt60": 1.5,
+              "output.dry_wet_mix": -0.8
+            }
+          }
+        },
+        {
+          "name": "Solo (singing lead)",
+          "description": "Matched to the lead from 3:45 and the outro: a TS9 into a pushed amp with strong mids (where the record's lead sits) and a quarter-note echo at 147 BPM. Neck pickup, wide vibrato on held notes.",
+          "level_db": -15.6,
+          "guitar": {
+            "pickup": "neck",
+            "volume": 10,
+            "tone1": 9,
+            "tone2": 10
+          },
+          "amp": {
+            "model": "12ax7",
+            "pregain": 11,
+            "drive": 4
+          },
+          "fx": {
+            "noise_gate": {
+              "threshold": 0.03
+            },
+            "ts9sim": {
+              "drive": 0.35,
+              "level": -6,
+              "tone": 550
+            },
+            "amp.tonestack": {
+              "select": "Mesa Boogie",
+              "Bass": 0.5,
+              "Middle": 0.8,
+              "Treble": 0.6
+            },
+            "cab": {
+              "select": "4x12"
+            },
+            "echo": {
+              "bpm": 147,
+              "percent": 25
+            },
+            "zita_rev1": {
+              "decay_times.mid_rt60": 2.2,
+              "decay_times.low_rt60": 2.2,
+              "output.dry_wet_mix": -0.6
+            }
+          }
+        }
+      ]
     }
   ]
 }
