@@ -41,6 +41,8 @@ just editing a JSON file.
 | 5 | Guns N' Roses - *Sweet Child O' Mine* | Intro riff | gate › medium-gain Marshall (JCM-800 tonestack) › 4x12 › plate-style reverb |
 | 6 | | Solo | gate › TS9 › pushed Marshall › 4x12 › reverb |
 | 7 | | Outro solo | gate › auto-wah › TS9 › pushed Marshall (mids up) › 4x12 › reverb |
+| 8 | Albatross - *Nischal* | Main riff | gate › light TS9 › high-gain amp (Mesa Boogie tonestack) › 4x12 › room |
+| 9 | | Solo | gate › TS9 › pushed amp (mids up) › 4x12 › 380 ms echo › reverb |
 
 These are by-ear approximations built from Guitarix's amp and pedal models, not copies of the original rigs.
 

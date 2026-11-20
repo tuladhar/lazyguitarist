@@ -281,6 +281,85 @@
           }
         }
       ]
+    },
+    {
+      "artist": "Albatross",
+      "song": "Nischal",
+      "album": "Atti Bhayo (2011)",
+      "parts": [
+        {
+          "name": "Main riff (rock rhythm)",
+          "description": "Inspired by Albatross's modern-rock rhythm sound: a high-gain Mesa-voiced amp, tight and punchy, with a small room. Bridge pickup, palm-mute the chugs. No rig details were found for this recording, and standard tuning is assumed.",
+          "level_db": -14.1,
+          "amp": {
+            "model": "12ax7",
+            "pregain": 10,
+            "drive": 3
+          },
+          "fx": {
+            "noise_gate": {
+              "threshold": 0.03
+            },
+            "ts9sim": {
+              "drive": 0.1,
+              "level": -8,
+              "tone": 600
+            },
+            "amp.tonestack": {
+              "select": "Mesa Boogie",
+              "Bass": 0.55,
+              "Middle": 0.5,
+              "Treble": 0.6
+            },
+            "cab": {
+              "select": "4x12"
+            },
+            "zita_rev1": {
+              "decay_times.mid_rt60": 1.5,
+              "decay_times.low_rt60": 1.5,
+              "output.dry_wet_mix": -0.8
+            }
+          }
+        },
+        {
+          "name": "Solo (lead with delay)",
+          "description": "Rock lead in the Albatross style: a TS9 boost for sustain and mids, a pushed amp, and a ~380 ms delay sitting under the notes. Neck pickup for the melodic lines, with wide vibrato on the held notes.",
+          "level_db": -15.2,
+          "amp": {
+            "model": "12ax7",
+            "pregain": 11,
+            "drive": 4
+          },
+          "fx": {
+            "noise_gate": {
+              "threshold": 0.03
+            },
+            "ts9sim": {
+              "drive": 0.35,
+              "level": -6,
+              "tone": 550
+            },
+            "amp.tonestack": {
+              "select": "Mesa Boogie",
+              "Bass": 0.55,
+              "Middle": 0.65,
+              "Treble": 0.6
+            },
+            "cab": {
+              "select": "4x12"
+            },
+            "echo": {
+              "bpm": 158,
+              "percent": 25
+            },
+            "zita_rev1": {
+              "decay_times.mid_rt60": 2.2,
+              "decay_times.low_rt60": 2.2,
+              "output.dry_wet_mix": -0.6
+            }
+          }
+        }
+      ]
     }
   ]
 }
