@@ -14,6 +14,7 @@ import (
 	"os/exec"
 	"os/signal"
 	"path/filepath"
+	"strings"
 	"syscall"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -91,16 +92,28 @@ func main() {
 	doCheck := flag.Bool("check", false, "list audio devices and exit")
 	startTuner := flag.Bool("tuner", false, "open straight into the tuner")
 	presetsPath := flag.String("presets", "", "presets file (default: ~/.config/guitarfx/presets.json, then next to the binary)")
+	paramsOf := flag.String("params", "", "show the settings of an effect (or \"units\" for the list) and exit")
+	doValidate := flag.Bool("validate", false, "check presets.json against Guitarix and exit")
+	doCalibrate := flag.Bool("calibrate", false, "suggest level_db for songs matching the argument (or all) and exit")
 	flag.Parse()
 
 	if *doCheck {
 		check()
 		return
 	}
+	if *paramsOf != "" {
+		os.Exit(paramsCmd(*paramsOf))
+	}
 	songs, from, err := loadPresets(*presetsPath)
 	if err != nil || len(songs) == 0 {
 		fmt.Fprintf(os.Stderr, "guitarfx: could not load presets (%s): %v\n", from, err)
 		os.Exit(1)
+	}
+	if *doValidate {
+		os.Exit(validateCmd(songs, from))
+	}
+	if *doCalibrate {
+		os.Exit(calibrateCmd(songs, strings.Join(flag.Args(), " ")))
 	}
 
 	cfg := loadConfig()

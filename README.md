@@ -25,6 +25,8 @@ just editing a JSON file.
   `~/Music/guitarfx/`.
 - **Low latency.** It runs PipeWire at a 128-sample buffer (2.7 ms), so playing feels instant through wired
   headphones. Quitting puts the buffer setting back.
+- **Add any song.** Type `/preset <song>` in Claude Code and it researches the tone and adds the preset. Or edit
+  `presets.json` by hand, with built-in checks.
 - **Zero setup.** It finds your USB guitar dongle, wires everything with PipeWire and starts the
   [Guitarix](https://guitarix.org) engine in the background with no window. You just see the TUI.
 
@@ -122,6 +124,25 @@ guitarfx --check    # list audio devices and what guitarfx would use
 
 ## Adding songs
 
+### The easy way: `/preset` (Claude Code)
+
+This repo ships a [Claude Code](https://claude.com/claude-code) skill. Open Claude Code in the repo and type:
+
+```
+/preset Comfortably Numb
+/preset Iron Man - Black Sabbath
+/preset Hotel California solo
+```
+
+It looks up how the guitarist got the tone on that recording (amp, pedals, delay time from the song's tempo),
+builds parts like "Main riff" and "Solo" from guitarfx's effects, checks every setting against Guitarix, matches
+the loudness to your other presets, and adds the song to the README table. Restart `guitarfx` and press the new
+number. Not quite right? Just say "darker", "more gain" or "less echo".
+
+The skill lives in [`.claude/skills/preset/SKILL.md`](.claude/skills/preset/SKILL.md).
+
+### By hand
+
 Presets live in `presets.json`. guitarfx reads `~/.config/guitarfx/presets.json` first, then the one next to the
 binary, then the copy built into the binary. Each part looks like this:
 
@@ -129,7 +150,7 @@ binary, then the copy built into the binary. Each part looks like this:
 {
   "name": "Solo (singing lead)",
   "description": "Shown in the Now playing panel.",
-  "level_db": 8.8,
+  "level_db": 9.7,
   "amp": { "model": "pre 12AT7/ push pull 6V6", "pregain": 0, "drive": -4 },
   "fx": {
     "compressor": { "ratio": 5, "threshold": -28 },
@@ -143,13 +164,24 @@ binary, then the copy built into the binary. Each part looks like this:
 
 - **`amp`**: `model` is a Guitarix tube model (`12ax7`, `12AU7`, `6V6`, `pre 12ax7/ push-pull 6V6`, …);
   `pregain` and `drive` are -20..20 dB.
-- **`fx`**: effects to turn on, with Guitarix parameter values. Anything not listed is off. Supported:
-  `noise_gate`, `crybaby` (wah), `compressor`, `rangem` (treble booster), `ts9sim` (Tube Screamer), `muff` (Big Muff)
-  before the amp; `amp.tonestack`, `cab`, `echo` after it; `zita_rev1` reverb.
-- **`echo.bpm`** sets the echo time: one repeat every 60000/bpm ms (133 ≈ 451 ms).
-- **`level_db`** evens out loudness between parts (-40..40 dB). Distorted parts need much less than clean ones.
+- **`fx`**: effects to turn on, with Guitarix settings. Anything not listed is off. Available: `noise_gate`,
+  `crybaby` (wah), `compressor`, `rangem` (treble booster), `ts9sim` (Tube Screamer), `muff` (Big Muff) before the
+  amp; `amp.tonestack`, `cab`, `echo` after it; `zita_rev1` reverb.
+- **`echo.bpm`** sets the echo time: one repeat every 60000/bpm ms (133 ≈ 451 ms; dotted eighth = tempo / 0.75).
+- **`level_db`** evens out loudness between parts (-40..40 dB).
 
-Typos are safe: unknown effects or parameters are skipped and shown in red instead of being sent to Guitarix.
+Three helper commands make editing easy. Each runs a hidden Guitarix instance that never makes sound, so they're
+safe while you play:
+
+```bash
+./guitarfx --params units            # which effects exist
+./guitarfx --params ts9sim           # an effect's settings, ranges and options (also: amp, cab, …)
+./guitarfx --validate                # check every preset: wrong names, out-of-range values, bad options
+./guitarfx --calibrate "numb"        # suggest level_db so the song is as loud as the rest
+```
+
+Even without `--validate`, typos are safe: unknown effects or settings are skipped and shown in red instead of
+being sent to Guitarix.
 
 ## Files
 

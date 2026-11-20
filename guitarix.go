@@ -35,7 +35,7 @@ type Guitarix struct {
 	rd     *bufio.Reader
 	mu     sync.Mutex
 	nextID int
-	params map[string]bool
+	params map[string]ParamInfo
 }
 
 func freePort() (int, error) {
@@ -190,7 +190,7 @@ func (g *Guitarix) Set(vals map[string]any) []string {
 	var flat []any
 	var bad []string
 	for k, v := range vals {
-		if !g.params[k] {
+		if _, ok := g.params[k]; !ok {
 			bad = append(bad, k)
 			continue
 		}
@@ -202,6 +202,16 @@ func (g *Guitarix) Set(vals map[string]any) []string {
 	return bad
 }
 
+// ParamInfo describes one Guitarix parameter.
+type ParamInfo struct {
+	ID      string
+	Type    string   // Float, Int, Bool, Enum, FloatEnum, String
+	Lower   *float64 // numeric range, if any
+	Upper   *float64
+	Options []string // allowed values for enums
+	Default any
+}
+
 func (g *Guitarix) loadParams() error {
 	raw, err := g.Call("parameterlist")
 	if err != nil {
@@ -211,29 +221,66 @@ func (g *Guitarix) loadParams() error {
 	if err := json.Unmarshal(raw, &list); err != nil {
 		return err
 	}
-	g.params = map[string]bool{}
+	g.params = map[string]ParamInfo{}
 	for i := 1; i < len(list); i += 2 {
+		var typ string
+		_ = json.Unmarshal(list[i-1], &typ)
 		var obj map[string]json.RawMessage
 		if json.Unmarshal(list[i], &obj) != nil {
 			continue
 		}
-		var p struct {
-			Parameter struct {
-				ID string `json:"id"`
-			} `json:"Parameter"`
-		}
-		if pr, ok := obj["Parameter"]; ok {
-			_ = json.Unmarshal(pr, &p.Parameter)
-		} else {
+		outer := obj
+		if _, ok := obj["Parameter"]; !ok { // some types nest the real object one level down
 			for _, v := range obj {
-				if json.Unmarshal(v, &p) == nil && p.Parameter.ID != "" {
-					break
+				var inner map[string]json.RawMessage
+				if json.Unmarshal(v, &inner) == nil {
+					if _, ok := inner["Parameter"]; ok {
+						obj = inner
+						break
+					}
 				}
 			}
 		}
-		if p.Parameter.ID != "" {
-			g.params[p.Parameter.ID] = true
+		var p struct {
+			ID string `json:"id"`
 		}
+		if json.Unmarshal(obj["Parameter"], &p) != nil || p.ID == "" {
+			continue
+		}
+		info := ParamInfo{ID: p.ID, Type: typ}
+		var f float64
+		if json.Unmarshal(obj["lower"], &f) == nil {
+			lo := f
+			info.Lower = &lo
+		}
+		if json.Unmarshal(obj["upper"], &f) == nil {
+			hi := f
+			info.Upper = &hi
+		}
+		_ = json.Unmarshal(obj["value"], &info.Default)
+		// value_names come as [id, label, id, label, ...] or [[id, label], ...]
+		var names []any
+		vn, ok := obj["value_names"]
+		if !ok {
+			vn = outer["value_names"]
+		}
+		if json.Unmarshal(vn, &names) == nil {
+			for j, n := range names {
+				switch v := n.(type) {
+				case string:
+					if j%2 == 0 {
+						info.Options = append(info.Options, v)
+					}
+				case []any:
+					if len(v) > 0 {
+						if s, ok := v[0].(string); ok {
+							info.Options = append(info.Options, s)
+						}
+					}
+				}
+			}
+		}
+		g.params[p.ID] = info
 	}
 	return nil
 }

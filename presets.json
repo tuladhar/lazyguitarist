@@ -9,7 +9,7 @@
         {
           "name": "Intro & verses (clean, ambient)",
           "description": "Gilmour-style clean: compressed for sustain, clean low-gain amp, long ~450 ms echo and a big hall reverb. Roll your guitar volume up from zero on the intro notes for swells.",
-          "level_db": 22.0,
+          "level_db": 21.5,
           "amp": {
             "model": "pre 12AT7/ push pull 6V6",
             "pregain": -6,
@@ -48,7 +48,7 @@
         {
           "name": "Solo (singing lead)",
           "description": "Smooth sustaining lead: compressor into a mild TS9 overdrive, slightly pushed amp, the same 450 ms echo a bit louder, plus reverb.",
-          "level_db": 8.8,
+          "level_db": 9.7,
           "amp": {
             "model": "pre 12AT7/ push pull 6V6",
             "pregain": 0,
@@ -101,7 +101,7 @@
         {
           "name": "Main riff (heavy)",
           "description": "Iommi-style: treble booster slammed into a high-gain amp with strong mids, 4x12 cab, noise gate, just a touch of room reverb.",
-          "level_db": -22.4,
+          "level_db": -21.8,
           "amp": {
             "model": "12ax7",
             "pregain": 12,
@@ -135,7 +135,7 @@
         {
           "name": "Solo (wah lead)",
           "description": "Riff tone plus an auto-wah (sweeps with how hard you pick) and a bit more reverb for the solo.",
-          "level_db": -22.8,
+          "level_db": -22.2,
           "amp": {
             "model": "12ax7",
             "pregain": 12,
