@@ -187,7 +187,7 @@ binary, then the copy built into the binary. Each part looks like this:
 
 - **`amp`**: `model` is a Guitarix tube model (`12ax7`, `12AU7`, `6V6`, `pre 12ax7/ push-pull 6V6`, …);
   `pregain` and `drive` are -20..20 dB.
-- **`fx`**: effects to turn on, with Guitarix settings. Anything not listed is off. Available: `noise_gate`,
+- **`fx`**: effects to turn on, with Guitarix settings. Anything not listed is off. Available: `abgate` (noise gate, threshold in dB),
   `crybaby` (wah), `compressor`, `rangem` (treble booster), `ts9sim` (Tube Screamer), `muff` (Big Muff) before the
   amp; `amp.tonestack`, `cab`, `echo` after it; `zita_rev1` reverb.
 - **`echo.bpm`** sets the echo time: one repeat every 60000/bpm ms (133 ≈ 451 ms; dotted eighth = tempo / 0.75).

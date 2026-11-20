@@ -288,6 +288,14 @@ func calibrateCmd(songs []Song, filter string) int {
 		fmt.Printf("%s - %s\n", s.Artist, s.Song)
 		for pi := range s.Parts {
 			part := s.Parts[pi] // copy; we only print suggestions
+			// Measure without the gate: the quiet test riff fades below a real-guitar gate threshold, and gating
+			// it would make the part measure too quiet.
+			part.FX = map[string]map[string]any{}
+			for id, ps := range s.Parts[pi].FX {
+				if id != "abgate" {
+					part.FX[id] = ps
+				}
+			}
 			level := part.LevelDB
 			var rms, peak float64
 			for round := 0; round < 4; round++ {

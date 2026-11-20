@@ -55,7 +55,7 @@ Only these effects exist (in signal order). Run `./lazyguitarix --params units` 
 
 | Block | Use for |
 |---|---|
-| `noise_gate` | any high-gain part (threshold ~0.02–0.04) |
+| `abgate` | noise gate for any driven part: `{ "threshold": -22, "attack": 1, "hold": 60, "decay": 300, "gaterange": -90 }` for high gain (pregain ≥ 8); threshold -24 and decay 400 for crunch. The user's Strat hums at about -26 dB peak at the input, so the threshold must stay above that. Guitarix's `abgate` can't gate it and is no longer available |
 | `crybaby` | wah: `"autowah": "auto"` for an envelope wah, or `"manual"` with a fixed `wah` position for a cocked-wah tone |
 | `compressor` | clean sustain, country/funk squash, Gilmour-style leads |
 | `rangem` | Rangemaster-style treble booster (Iommi, early Brian May, Clapton Beano) |

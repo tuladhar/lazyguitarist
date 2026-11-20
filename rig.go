@@ -99,7 +99,7 @@ type unit struct {
 
 // In signal order; the amp sits between the last "pre" and first "post" unit.
 var units = []unit{
-	{"noise_gate", "gate", "", 0},
+	{"abgate", "gate", "pre", 0},
 	{"crybaby", "wah", "pre", 1},
 	{"compressor", "comp", "pre", 2},
 	{"rangem", "treble boost", "pre", 3},
