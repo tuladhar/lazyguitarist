@@ -1,0 +1,177 @@
+{
+  "_help": "Each part turns on only the effects listed under fx; everything else is off. Effect names and parameters are Guitarix ids (see README). level_db evens out loudness between parts.",
+  "songs": [
+    {
+      "artist": "Pink Floyd",
+      "song": "Coming Back to Life",
+      "album": "The Division Bell (1994)",
+      "parts": [
+        {
+          "name": "Intro & verses (clean, ambient)",
+          "description": "Gilmour-style clean: compressed for sustain, clean low-gain amp, long ~450 ms echo and a big hall reverb. Roll your guitar volume up from zero on the intro notes for swells.",
+          "level_db": 22.0,
+          "amp": {
+            "model": "pre 12AT7/ push pull 6V6",
+            "pregain": -6,
+            "drive": -8
+          },
+          "fx": {
+            "compressor": {
+              "ratio": 4,
+              "threshold": -30,
+              "attack": 0.01,
+              "release": 0.4,
+              "knee": 6
+            },
+            "amp.tonestack": {
+              "select": "Twin Reverb",
+              "Bass": 0.4,
+              "Middle": 0.5,
+              "Treble": 0.62
+            },
+            "cab": {
+              "select": "4x12",
+              "bass": -2,
+              "treble": 1
+            },
+            "echo": {
+              "bpm": 133,
+              "percent": 28
+            },
+            "zita_rev1": {
+              "decay_times.mid_rt60": 3.5,
+              "decay_times.low_rt60": 3.5,
+              "output.dry_wet_mix": -0.35
+            }
+          }
+        },
+        {
+          "name": "Solo (singing lead)",
+          "description": "Smooth sustaining lead: compressor into a mild TS9 overdrive, slightly pushed amp, the same 450 ms echo a bit louder, plus reverb.",
+          "level_db": 8.8,
+          "amp": {
+            "model": "pre 12AT7/ push pull 6V6",
+            "pregain": 0,
+            "drive": -4
+          },
+          "fx": {
+            "noise_gate": {
+              "threshold": 0.02
+            },
+            "compressor": {
+              "ratio": 5,
+              "threshold": -28,
+              "attack": 0.01,
+              "release": 0.5,
+              "knee": 6
+            },
+            "ts9sim": {
+              "drive": 0.45,
+              "tone": 550,
+              "level": -10
+            },
+            "amp.tonestack": {
+              "select": "Twin Reverb",
+              "Bass": 0.45,
+              "Middle": 0.6,
+              "Treble": 0.55
+            },
+            "cab": {
+              "select": "4x12",
+              "bass": -1
+            },
+            "echo": {
+              "bpm": 133,
+              "percent": 32
+            },
+            "zita_rev1": {
+              "decay_times.mid_rt60": 3.0,
+              "decay_times.low_rt60": 3.0,
+              "output.dry_wet_mix": -0.45
+            }
+          }
+        }
+      ]
+    },
+    {
+      "artist": "Black Sabbath",
+      "song": "N.I.B.",
+      "album": "Black Sabbath (1970)",
+      "parts": [
+        {
+          "name": "Main riff (heavy)",
+          "description": "Iommi-style: treble booster slammed into a high-gain amp with strong mids, 4x12 cab, noise gate, just a touch of room reverb.",
+          "level_db": -22.4,
+          "amp": {
+            "model": "12ax7",
+            "pregain": 12,
+            "drive": 4
+          },
+          "fx": {
+            "noise_gate": {
+              "threshold": 0.03
+            },
+            "rangem": {
+              "Boost": 0.85,
+              "wet_dry": 100
+            },
+            "amp.tonestack": {
+              "select": "JCM-800",
+              "Bass": 0.55,
+              "Middle": 0.75,
+              "Treble": 0.6
+            },
+            "cab": {
+              "select": "4x12",
+              "bass": 1
+            },
+            "zita_rev1": {
+              "decay_times.mid_rt60": 1.2,
+              "decay_times.low_rt60": 1.2,
+              "output.dry_wet_mix": -0.85
+            }
+          }
+        },
+        {
+          "name": "Solo (wah lead)",
+          "description": "Riff tone plus an auto-wah (sweeps with how hard you pick) and a bit more reverb for the solo.",
+          "level_db": -22.8,
+          "amp": {
+            "model": "12ax7",
+            "pregain": 12,
+            "drive": 5
+          },
+          "fx": {
+            "noise_gate": {
+              "threshold": 0.03
+            },
+            "crybaby": {
+              "autowah": "auto",
+              "level": 0.3,
+              "wet_dry": 100
+            },
+            "rangem": {
+              "Boost": 0.85,
+              "wet_dry": 100
+            },
+            "amp.tonestack": {
+              "select": "JCM-800",
+              "Bass": 0.5,
+              "Middle": 0.8,
+              "Treble": 0.6
+            },
+            "cab": {
+              "select": "4x12",
+              "bass": 1
+            },
+            "zita_rev1": {
+              "decay_times.mid_rt60": 1.8,
+              "decay_times.low_rt60": 1.8,
+              "output.dry_wet_mix": -0.7
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
