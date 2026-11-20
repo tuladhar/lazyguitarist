@@ -42,10 +42,10 @@ type Config struct {
 
 var (
 	home       = os.Getenv("HOME")
-	configDir  = filepath.Join(home, ".config", "guitarfx")
+	configDir  = filepath.Join(home, ".config", "lazyguitarix")
 	configFile = filepath.Join(configDir, "config.json")
-	logFile    = filepath.Join(home, ".cache", "guitarfx", "guitarix.log")
-	recDir     = filepath.Join(home, "Music", "guitarfx")
+	logFile    = filepath.Join(home, ".cache", "lazyguitarix", "guitarix.log")
+	recDir     = filepath.Join(home, "Music", "lazyguitarix")
 	quantums   = []int{64, 128, 256}
 )
 
@@ -68,7 +68,7 @@ func (c *Config) Save() {
 
 // ---------------------------------------------------------------- effect chain
 
-// unit is an effect guitarfx manages. pp "" means Guitarix keeps its own fixed slot
+// unit is an effect lazyguitarix manages. pp "" means Guitarix keeps its own fixed slot
 // (noise gate first, reverb in the stereo rack); otherwise pre/post amp at pos.
 type unit struct {
 	id, label, pp string

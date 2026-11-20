@@ -17,9 +17,9 @@ import (
 
 const rate = 48000
 
-// gxName prefixes the JACK clients (guitarfx_amp, guitarfx_fx). GUITARFX_INSTANCE
+// gxName prefixes the JACK clients (lazyguitarix_amp, lazyguitarix_fx). LAZYGUITARIX_INSTANCE
 // lets a second copy run side by side (handy for testing).
-var gxName = envOr("GUITARFX_INSTANCE", "guitarfx")
+var gxName = envOr("LAZYGUITARIX_INSTANCE", "lazyguitarix")
 
 func envOr(k, def string) string {
 	if v := os.Getenv(k); v != "" {

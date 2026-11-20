@@ -1,10 +1,10 @@
 ---
 name: preset
-description: Add a guitar tone preset for a song to guitarfx's presets.json. Use when the user runs /preset <song name> or asks to add, create or make a preset or tone for a song, solo or riff (e.g. "/preset Comfortably Numb", "add a preset for Iron Man", "make a tone for the Hotel California solo").
+description: Add a guitar tone preset for a song to lazyguitarix's presets.json. Use when the user runs /preset <song name> or asks to add, create or make a preset or tone for a song, solo or riff (e.g. "/preset Comfortably Numb", "add a preset for Iron Man", "make a tone for the Hotel California solo").
 argument-hint: <song name> [artist] [part, e.g. "solo"]
 ---
 
-# Add a song preset to guitarfx
+# Add a song preset to lazyguitarix
 
 The user wants a preset for: **$ARGUMENTS**
 
@@ -29,11 +29,11 @@ Good sources are rig rundowns, Equipboard, interviews, and gear forums for the b
 
 - **Tempo:** you need it if the part has a tempo-synced delay.
 - **Tuning:** if it isn't standard E (e.g. Sabbath often tuned down, drop D songs), mention it in the
-  `description`, since guitarfx's tuner shows standard tuning.
+  `description`, since lazyguitarix's tuner shows standard tuning.
 
-## 3. Map the rig onto guitarfx's building blocks
+## 3. Map the rig onto lazyguitarix's building blocks
 
-Only these effects exist (in signal order). Run `./guitarfx --params units` to confirm:
+Only these effects exist (in signal order). Run `./lazyguitarix --params units` to confirm:
 
 | Block | Use for |
 |---|---|
@@ -55,10 +55,10 @@ Only these effects exist (in signal order). Run `./guitarfx --params units` to c
 **Always check real setting names and options** before writing them:
 
 ```bash
-go build -o guitarfx .
-./guitarfx --params amp          # amp models, gain ranges
-./guitarfx --params cab          # cab options
-./guitarfx --params ts9sim       # any effect: its settings, ranges and options
+go build -o lazyguitarix .
+./lazyguitarix --params amp          # amp models, gain ranges
+./lazyguitarix --params cab          # cab options
+./lazyguitarix --params ts9sim       # any effect: its settings, ranges and options
 ```
 
 These commands start a hidden Guitarix and never make sound. They're safe while the user is playing.
@@ -95,12 +95,12 @@ Match the style of the existing entries in `presets.json` (2-space indent, keys 
   volume swells, tuning). Say "X-style" or "inspired by": these are approximations, never claim it is the
   exact original rig.
 - Leave `level_db` at 0 for now. Step 6 sets it.
-- Don't set `on_off`, `pp`, `position` or `s_h`: guitarfx manages those.
+- Don't set `on_off`, `pp`, `position` or `s_h`: lazyguitarix manages those.
 
 ## 5. Validate
 
 ```bash
-./guitarfx --validate
+./lazyguitarix --validate
 ```
 
 Fix every ✗ line (wrong names, out-of-range values, options that don't exist) and re-run until all parts
@@ -109,7 +109,7 @@ show ✓.
 ## 6. Calibrate loudness
 
 ```bash
-./guitarfx --calibrate "<song name>"
+./lazyguitarix --calibrate "<song name>"
 ```
 
 It plays a test riff through a hidden Guitarix (silent, ~12 s per part) and prints a `"level_db"` for
@@ -127,7 +127,7 @@ Give a short summary:
 
 - the song and parts added, with each chain in one line;
 - any non-standard tuning;
-- that they need to restart `guitarfx` (or `go build -o guitarfx .` first if they run the binary), then
+- that they need to restart `lazyguitarix` (or `go build -o lazyguitarix .` first if they run the binary), then
   press the new numbers to play.
 
 The presets are educated guesses from research. Invite them to say "darker", "more gain", "less
