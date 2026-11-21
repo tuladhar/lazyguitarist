@@ -4,7 +4,7 @@ package main
 // --calibrate (what level_db makes this part as loud as the others?).
 //
 // All of them run a separate, hidden Guitarix instance that is never connected to your
-// speakers or headphones, so they're safe to run while lazyguitarix is playing.
+// speakers or headphones, so they're safe to run while lazyguitarist is playing.
 
 import (
 	"encoding/binary"
@@ -57,12 +57,12 @@ func paramsCmd(unitID string) int {
 			}
 			fmt.Printf("  %-14s %-13s (%s)\n", u.id, u.label, where)
 		}
-		fmt.Println("\nRun lazyguitarix --params <effect> to see its settings.")
+		fmt.Println("\nRun lazyguitarist --params <effect> to see its settings.")
 		return 0
 	}
-	r, err := startHidden("lazyguitarix_params")
+	r, err := startHidden("lazyguitarist_params")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "lazyguitarix:", err)
+		fmt.Fprintln(os.Stderr, "lazyguitarist:", err)
 		return 1
 	}
 	defer stopHidden(r)
@@ -75,7 +75,7 @@ func paramsCmd(unitID string) int {
 		return 0
 	}
 	if !isUnit(unitID) {
-		fmt.Fprintf(os.Stderr, "unknown effect %q (try: lazyguitarix --params units)\n", unitID)
+		fmt.Fprintf(os.Stderr, "unknown effect %q (try: lazyguitarist --params units)\n", unitID)
 		return 1
 	}
 	var ids []string
@@ -95,7 +95,7 @@ func paramsCmd(unitID string) int {
 	return 0
 }
 
-// managedKey: settings lazyguitarix controls itself; presets must not set them.
+// managedKey: settings lazyguitarist controls itself; presets must not set them.
 func managedKey(k string) bool {
 	return k == "on_off" || k == "pp" || k == "position" || k == "s_h"
 }
@@ -161,9 +161,9 @@ func checkValue(p ParamInfo, v any) string {
 }
 
 func validateCmd(songs []Song, from string) int {
-	r, err := startHidden("lazyguitarix_check")
+	r, err := startHidden("lazyguitarist_check")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "lazyguitarix:", err)
+		fmt.Fprintln(os.Stderr, "lazyguitarist:", err)
 		return 1
 	}
 	defer stopHidden(r)
@@ -210,17 +210,17 @@ func validateCmd(songs []Song, from string) int {
 			}
 			for u, ps := range p.FX {
 				if !isUnit(u) {
-					probs = append(probs, fmt.Sprintf("fx.%s: unknown effect (lazyguitarix --params units)", u))
+					probs = append(probs, fmt.Sprintf("fx.%s: unknown effect (lazyguitarist --params units)", u))
 					continue
 				}
 				for k, v := range ps {
 					if managedKey(k) {
-						probs = append(probs, fmt.Sprintf("fx.%s.%s: set by lazyguitarix, remove it", u, k))
+						probs = append(probs, fmt.Sprintf("fx.%s.%s: set by lazyguitarist, remove it", u, k))
 						continue
 					}
 					info, ok := params[u+"."+k]
 					if !ok {
-						probs = append(probs, fmt.Sprintf("fx.%s.%s: unknown setting (lazyguitarix --params %s)", u, k, u))
+						probs = append(probs, fmt.Sprintf("fx.%s.%s: unknown setting (lazyguitarist --params %s)", u, k, u))
 						continue
 					}
 					if msg := checkValue(info, v); msg != "" {
@@ -264,21 +264,21 @@ func calibrateCmd(songs []Song, filter string) int {
 		fmt.Fprintf(os.Stderr, "no song matches %q\n", filter)
 		return 1
 	}
-	r, err := startHidden("lazyguitarix_cal")
+	r, err := startHidden("lazyguitarist_cal")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "lazyguitarix:", err)
+		fmt.Fprintln(os.Stderr, "lazyguitarist:", err)
 		return 1
 	}
 	defer stopHidden(r)
-	tmp, err := os.MkdirTemp("", "lazyguitarix-cal-")
+	tmp, err := os.MkdirTemp("", "lazyguitarist-cal-")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "lazyguitarix:", err)
+		fmt.Fprintln(os.Stderr, "lazyguitarist:", err)
 		return 1
 	}
 	defer os.RemoveAll(tmp)
 	pluck := filepath.Join(tmp, "pluck.wav")
 	if err := writePluck(pluck); err != nil {
-		fmt.Fprintln(os.Stderr, "lazyguitarix:", err)
+		fmt.Fprintln(os.Stderr, "lazyguitarist:", err)
 		return 1
 	}
 
@@ -304,7 +304,7 @@ func calibrateCmd(songs []Song, filter string) int {
 				time.Sleep(700 * time.Millisecond) // let the previous part's tails die
 				rms, peak, err = measure(filepath.Join(tmp, "out.wav"), pluck)
 				if err != nil {
-					fmt.Fprintln(os.Stderr, "lazyguitarix:", err)
+					fmt.Fprintln(os.Stderr, "lazyguitarist:", err)
 					return 1
 				}
 				next := math.Min(level+(calTargetRMS-rms), level+(calMaxPeak-peak))

@@ -193,7 +193,7 @@ func (m model) View() string {
 }
 
 func (m model) header(w int) string {
-	left := sTitle.Render("🎸 lazyguitarix") + "  " + sMuted.Render("guitar → USB dongle → Guitarix → headphones")
+	left := sTitle.Render("🎸 lazyguitarist") + "  " + sMuted.Render("guitar → USB dongle → Guitarix → headphones")
 	right := ""
 	if m.rig.Rec.Active() {
 		label := "● REC " + fmtDur(m.rig.Rec.Elapsed())

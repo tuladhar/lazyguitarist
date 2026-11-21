@@ -1,4 +1,4 @@
-module github.com/tuladhar/lazyguitarix
+module github.com/tuladhar/lazyguitarist
 
 go 1.27.3
 

@@ -64,12 +64,29 @@ type Config struct {
 
 var (
 	home       = os.Getenv("HOME")
-	configDir  = filepath.Join(home, ".config", "lazyguitarix")
+	configDir  = filepath.Join(home, ".config", "lazyguitarist")
 	configFile = filepath.Join(configDir, "config.json")
-	logFile    = filepath.Join(home, ".cache", "lazyguitarix", "guitarix.log")
-	recDir     = filepath.Join(home, "Music", "lazyguitarix")
+	logFile    = filepath.Join(home, ".cache", "lazyguitarist", "guitarix.log")
+	recDir     = filepath.Join(home, "Music", "lazyguitarist")
 	quantums   = []int{64, 128, 256}
 )
+
+// migrateOldName moves settings, recordings and logs from the tool's old name (lazyguitarix) to the new one, once.
+func migrateOldName() {
+	for _, p := range [][2]string{
+		{filepath.Join(home, ".config", "lazyguitarix"), configDir},
+		{filepath.Join(home, "Music", "lazyguitarix"), recDir},
+		{filepath.Join(home, ".cache", "lazyguitarix"), filepath.Dir(logFile)},
+		{filepath.Join(home, ".config", "guitarix", "lazyguitarix_rc"), filepath.Join(home, ".config", "guitarix", "lazyguitarist_rc")},
+	} {
+		if _, err := os.Stat(p[1]); err == nil {
+			continue
+		}
+		if _, err := os.Stat(p[0]); err == nil {
+			_ = os.Rename(p[0], p[1])
+		}
+	}
+}
 
 func loadConfig() *Config {
 	c := &Config{}
@@ -90,7 +107,7 @@ func (c *Config) Save() {
 
 // ---------------------------------------------------------------- effect chain
 
-// unit is an effect lazyguitarix manages. pp "" means Guitarix keeps its own fixed slot
+// unit is an effect lazyguitarist manages. pp "" means Guitarix keeps its own fixed slot
 // (noise gate first, reverb in the stereo rack); otherwise pre/post amp at pos.
 type unit struct {
 	id, label, pp string

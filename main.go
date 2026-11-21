@@ -1,7 +1,7 @@
-// lazyguitarix: a terminal guitar multi-effect for Linux.
+// lazyguitarist: a terminal guitar multi-effect for Linux.
 //
 // Guitar -> USB audio dongle -> Guitarix (headless DSP engine) -> wired headphones.
-// lazyguitarix starts Guitarix without its GUI, wires it with PipeWire, loads song presets
+// lazyguitarist starts Guitarix without its GUI, wires it with PipeWire, loads song presets
 // over Guitarix's JSON-RPC port, and has a tuner and a clean recorder.
 package main
 
@@ -23,7 +23,7 @@ import (
 //go:embed presets.json
 var embeddedPresets []byte
 
-// loadPresets: --presets flag, then ~/.config/lazyguitarix/presets.json, then presets.json
+// loadPresets: --presets flag, then ~/.config/lazyguitarist/presets.json, then presets.json
 // next to the binary, then the copy built into the binary.
 func loadPresets(flagPath string) ([]Song, string, error) {
 	var candidates []string
@@ -69,7 +69,7 @@ func check() {
 	}
 	cfg := loadConfig()
 	in := pickInput(srcs, cfg.Input)
-	fmt.Printf("\nlazyguitarix would use:\n  input  %s\n  output %s\n", in, pickOutput(sinks, in, cfg.Output))
+	fmt.Printf("\nlazyguitarist would use:\n  input  %s\n  output %s\n", in, pickOutput(sinks, in, cfg.Output))
 	_, from, err := loadPresets("")
 	fmt.Printf("  presets %s %v\n", from, errOr(err))
 	for _, t := range []string{"guitarix", "pw-jack", "pw-link", "pw-metadata", "pw-record", "pactl"} {
@@ -89,9 +89,10 @@ func errOr(err error) string {
 }
 
 func main() {
+	migrateOldName()
 	doCheck := flag.Bool("check", false, "list audio devices and exit")
 	startTuner := flag.Bool("tuner", false, "open straight into the tuner")
-	presetsPath := flag.String("presets", "", "presets file (default: ~/.config/lazyguitarix/presets.json, then next to the binary)")
+	presetsPath := flag.String("presets", "", "presets file (default: ~/.config/lazyguitarist/presets.json, then next to the binary)")
 	paramsOf := flag.String("params", "", "show the settings of an effect (or \"units\" for the list) and exit")
 	doValidate := flag.Bool("validate", false, "check presets.json against Guitarix and exit")
 	doCalibrate := flag.Bool("calibrate", false, "suggest level_db for songs matching the argument (or all) and exit")
@@ -106,7 +107,7 @@ func main() {
 	}
 	songs, from, err := loadPresets(*presetsPath)
 	if err != nil || len(songs) == 0 {
-		fmt.Fprintf(os.Stderr, "lazyguitarix: could not load presets (%s): %v\n", from, err)
+		fmt.Fprintf(os.Stderr, "lazyguitarist: could not load presets (%s): %v\n", from, err)
 		os.Exit(1)
 	}
 	if *doValidate {
@@ -121,7 +122,7 @@ func main() {
 	fmt.Println("starting Guitarix…")
 	if err := rig.Start(); err != nil {
 		rig.Stop()
-		fmt.Fprintf(os.Stderr, "lazyguitarix: %v\n", err)
+		fmt.Fprintf(os.Stderr, "lazyguitarist: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -137,7 +138,7 @@ func main() {
 		fmt.Printf("saved recording (%s): %s\n", fmtDur(d), path)
 	}
 	if runErr != nil {
-		fmt.Fprintf(os.Stderr, "lazyguitarix: %v\n", runErr)
+		fmt.Fprintf(os.Stderr, "lazyguitarist: %v\n", runErr)
 		os.Exit(1)
 	}
 }

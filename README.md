@@ -1,4 +1,4 @@
-# lazyguitarix
+# lazyguitarist
 
 **Lazy guitar effects for Linux.** Pick a song, plug in, play. No pedalboard, no patching, no fiddling with knobs.
 
@@ -6,7 +6,7 @@ I made this TUI on [Omarchy](https://omarchy.org) to help me play some of my fav
 setting up effects every time. Each song has a preset for each part (verse, solo, riff), and adding more songs is
 just editing a JSON file.
 
-![lazyguitarix screenshot](docs/screenshot.png)
+![lazyguitarist screenshot](docs/screenshot.png)
 
 ## Demo
 
@@ -22,7 +22,7 @@ just editing a JSON file.
   **loosen** it, and by how much. The amp is muted while you tune, and 50/60 Hz cable hum is ignored.
 - **Recording.** Press `r` to record exactly what you hear, and `r` again to stop. A blinking
   `● REC 0:12` shows while recording. Files are clean 48 kHz / 32-bit WAVs with click-free fades, saved in
-  `~/Music/lazyguitarix/`.
+  `~/Music/lazyguitarist/`.
 - **Low latency.** It runs PipeWire at a 128-sample buffer (2.7 ms), so playing feels instant through wired
   headphones. Quitting puts the buffer setting back.
 - **Add any song.** Type `/preset <song>` in Claude Code and it researches the tone and adds the preset. Or edit
@@ -57,7 +57,7 @@ These are by-ear approximations built from Guitarix's amp and pedal models, not 
 ```
 Fender ──► USB dongle (mic in) ──► Guitarix (headless) ──► headphones (wired)
                                         ▲
-                     lazyguitarix TUI ──────┘  JSON-RPC: presets, tuner, volume
+                     lazyguitarist TUI ──────┘  JSON-RPC: presets, tuner, volume
                      PipeWire (pw-link)    wiring + 128-sample buffer
                      pw-record             recording
 ```
@@ -83,14 +83,14 @@ USB audio dongles use the kernel's standard `snd-usb-audio` driver.
 ## Install & run
 
 ```bash
-git clone https://github.com/tuladhar/lazyguitarix.git
-cd lazyguitarix
-go build -o lazyguitarix .
-ln -s "$PWD/lazyguitarix" ~/.local/bin/lazyguitarix   # optional: run it from anywhere
+git clone https://github.com/tuladhar/lazyguitarist.git
+cd lazyguitarist
+go build -o lazyguitarist .
+ln -s "$PWD/lazyguitarist" ~/.local/bin/lazyguitarist   # optional: run it from anywhere
 
-lazyguitarix            # preset menu
-lazyguitarix --tuner    # open straight into the tuner
-lazyguitarix --check    # list audio devices and what lazyguitarix would use
+lazyguitarist            # preset menu
+lazyguitarist --tuner    # open straight into the tuner
+lazyguitarist --check    # list audio devices and what lazyguitarist would use
 ```
 
 ### Keys
@@ -122,7 +122,7 @@ lazyguitarix --check    # list audio devices and what lazyguitarix would use
 
 ### Preferred settings
 
-- **Buffer:** 128 samples @ 48 kHz (`l` to change). lazyguitarix sets it with
+- **Buffer:** 128 samples @ 48 kHz (`l` to change). lazyguitarist sets it with
   `pw-metadata -n settings 0 clock.force-quantum 128` while it runs and restores it on quit.
 - **Output:** the wired headphone jack (`o` to pick). Plugging the headphones into the dongle itself saves another
   ~1–2 ms, because input and output then share one clock.
@@ -130,9 +130,9 @@ lazyguitarix --check    # list audio devices and what lazyguitarix would use
   are hot.
 - **Volume:** start at -12 dB with the headphones off your ears, then bring it up.
 - **Firewall:** keep `ufw` on (Omarchy's default). Guitarix's control port has no password and listens on all
-  interfaces while lazyguitarix runs, and ufw blocks it from the network.
+  interfaces while lazyguitarist runs, and ufw blocks it from the network.
 - **Avoid 16 kHz "mic" dongles:** some USB receivers only do 16 kHz, which sounds like a phone call.
-  `lazyguitarix --check` shows each device's sample rate. You want 44.1 or 48 kHz.
+  `lazyguitarist --check` shows each device's sample rate. You want 44.1 or 48 kHz.
 
 ## Adding songs
 
@@ -148,8 +148,8 @@ This repo ships a [Claude Code](https://claude.com/claude-code) skill. Open Clau
 ```
 
 It looks up how the guitarist got the tone on that recording (amp, pedals, delay time from the song's tempo),
-builds parts like "Main riff" and "Solo" from lazyguitarix's effects, checks every setting against Guitarix, matches
-the loudness to your other presets, and adds the song to the README table. Restart `lazyguitarix`, pick the song and press
+builds parts like "Main riff" and "Solo" from lazyguitarist's effects, checks every setting against Guitarix, matches
+the loudness to your other presets, and adds the song to the README table. Restart `lazyguitarist`, pick the song and press
 `1`, `2`, `3`… for its parts. Not quite right? Just say "darker", "more gain" or "less echo".
 
 **Works best with the original song.** Give the path to an MP3 of the recording and the skill learns from it:
@@ -165,7 +165,7 @@ The skill lives in [`.claude/skills/preset/SKILL.md`](.claude/skills/preset/SKIL
 
 ### By hand
 
-Presets live in `presets.json`. lazyguitarix reads `~/.config/lazyguitarix/presets.json` first, then the one next to the
+Presets live in `presets.json`. lazyguitarist reads `~/.config/lazyguitarist/presets.json` first, then the one next to the
 binary, then the copy built into the binary. Each part looks like this:
 
 ```json
@@ -200,10 +200,10 @@ Three helper commands make editing easy. Each runs a hidden Guitarix instance th
 safe while you play:
 
 ```bash
-./lazyguitarix --params units            # which effects exist
-./lazyguitarix --params ts9sim           # an effect's settings, ranges and options (also: amp, cab, …)
-./lazyguitarix --validate                # check every preset: wrong names, out-of-range values, bad options
-./lazyguitarix --calibrate "numb"        # suggest level_db so the song is as loud as the rest
+./lazyguitarist --params units            # which effects exist
+./lazyguitarist --params ts9sim           # an effect's settings, ranges and options (also: amp, cab, …)
+./lazyguitarist --validate                # check every preset: wrong names, out-of-range values, bad options
+./lazyguitarist --calibrate "numb"        # suggest level_db so the song is as loud as the rest
 ```
 
 Even without `--validate`, typos are safe: unknown effects or settings are skipped and shown in red instead of
@@ -213,12 +213,12 @@ being sent to Guitarix.
 
 | Path | What |
 |---|---|
-| `~/.config/lazyguitarix/config.json` | chosen devices, volume, buffer, last preset |
-| `~/Music/lazyguitarix/` | recordings |
-| `~/.cache/lazyguitarix/guitarix.log` | Guitarix engine log |
-| `~/.config/guitarix/lazyguitarix_rc` | Guitarix's state for this instance (your normal Guitarix settings are untouched) |
+| `~/.config/lazyguitarist/config.json` | chosen devices, volume, buffer, last preset |
+| `~/Music/lazyguitarist/` | recordings |
+| `~/.cache/lazyguitarist/guitarix.log` | Guitarix engine log |
+| `~/.config/guitarix/lazyguitarist_rc` | Guitarix's state for this instance (your normal Guitarix settings are untouched) |
 
-If lazyguitarix is ever killed with `kill -9`, restore PipeWire's buffer with
+If lazyguitarist is ever killed with `kill -9`, restore PipeWire's buffer with
 `pw-metadata -n settings 0 clock.force-quantum 0`.
 
 ## Built with

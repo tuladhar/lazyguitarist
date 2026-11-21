@@ -1,10 +1,10 @@
 ---
 name: preset
-description: Add a guitar tone preset for a song to lazyguitarix's presets.json. Use when the user runs /preset <song name> or asks to add, create or make a preset or tone for a song, solo or riff (e.g. "/preset Comfortably Numb", "add a preset for Iron Man", "make a tone for the Hotel California solo").
+description: Add a guitar tone preset for a song to lazyguitarist's presets.json. Use when the user runs /preset <song name> or asks to add, create or make a preset or tone for a song, solo or riff (e.g. "/preset Comfortably Numb", "add a preset for Iron Man", "make a tone for the Hotel California solo").
 argument-hint: <song name> [artist] [part, e.g. "solo"]
 ---
 
-# Add a song preset to lazyguitarix
+# Add a song preset to lazyguitarist
 
 The user wants a preset for: **$ARGUMENTS**
 
@@ -29,7 +29,7 @@ Good sources are rig rundowns, Equipboard, interviews, and gear forums for the b
 
 - **Tempo:** you need it if the part has a tempo-synced delay.
 - **Tuning:** if it isn't standard E (e.g. Sabbath often tuned down, drop D songs), mention it in the
-  `description`, since lazyguitarix's tuner shows standard tuning.
+  `description`, since lazyguitarist's tuner shows standard tuning.
 
 ### If the user gives an audio file of the song
 
@@ -49,9 +49,9 @@ with `ffmpeg` in the scratchpad, and analyze it with Python (`librosa`, in a scr
 Make one part per distinct section, say in each `description` which part of the record it was matched to
 (e.g. "Matched to the verse at 0:25"), and tell the user what you measured.
 
-## 3. Map the rig onto lazyguitarix's building blocks
+## 3. Map the rig onto lazyguitarist's building blocks
 
-Only these effects exist (in signal order). Run `./lazyguitarix --params units` to confirm:
+Only these effects exist (in signal order). Run `./lazyguitarist --params units` to confirm:
 
 | Block | Use for |
 |---|---|
@@ -73,10 +73,10 @@ Only these effects exist (in signal order). Run `./lazyguitarix --params units` 
 **Always check real setting names and options** before writing them:
 
 ```bash
-go build -o lazyguitarix .
-./lazyguitarix --params amp          # amp models, gain ranges
-./lazyguitarix --params cab          # cab options
-./lazyguitarix --params ts9sim       # any effect: its settings, ranges and options
+go build -o lazyguitarist .
+./lazyguitarist --params amp          # amp models, gain ranges
+./lazyguitarist --params cab          # cab options
+./lazyguitarist --params ts9sim       # any effect: its settings, ranges and options
 ```
 
 These commands start a hidden Guitarix and never make sound. They're safe while the user is playing.
@@ -118,12 +118,12 @@ Match the style of the existing entries in `presets.json` (2-space indent, keys 
   shown under the chain. `pickup` is one of `bridge`, `bridge+middle`, `middle`, `middle+neck`, `neck`; knobs
   are 0..10. Translate the original guitarist's pickup choice (Les Paul neck humbucker → `neck`, bridge → `bridge`;
   Strat "quack" → `bridge+middle`/`middle+neck`), and roll a tone knob back for darker "woman tone" leads.
-- Don't set `on_off`, `pp`, `position` or `s_h`: lazyguitarix manages those.
+- Don't set `on_off`, `pp`, `position` or `s_h`: lazyguitarist manages those.
 
 ## 5. Validate
 
 ```bash
-./lazyguitarix --validate
+./lazyguitarist --validate
 ```
 
 Fix every ✗ line (wrong names, out-of-range values, options that don't exist) and re-run until all parts
@@ -132,7 +132,7 @@ show ✓.
 ## 6. Calibrate loudness
 
 ```bash
-./lazyguitarix --calibrate "<song name>"
+./lazyguitarist --calibrate "<song name>"
 ```
 
 It plays a test riff through a hidden Guitarix (silent, ~12 s per part) and prints a `"level_db"` for
@@ -150,7 +150,7 @@ Give a short summary:
 
 - the song and parts added, with each chain in one line;
 - any non-standard tuning;
-- that they need to restart `lazyguitarix` (or `go build -o lazyguitarix .` first if they run the binary), then
+- that they need to restart `lazyguitarist` (or `go build -o lazyguitarist .` first if they run the binary), then
   pick the song and press `1`, `2`, `3`… for its parts.
 
 The presets are educated guesses from research. Invite them to say "darker", "more gain", "less
