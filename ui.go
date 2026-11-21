@@ -75,6 +75,7 @@ type model struct {
 	rigRow int // cursor in the Rig panel
 	tuner  bool
 	help   bool
+	about  bool
 	w, h   int
 	freq   float64 // smoothed tuner frequency (0 = no note)
 	seenAt time.Time
@@ -146,8 +147,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			r.Mute(false)
 			return m, nil
 		}
-		if m.help && k != "?" {
-			m.help = false
+		if (m.help && k != "?") || (m.about && k != "a") { // any other key closes them
+			m.help, m.about = false, false
 			if k == "esc" {
 				return m, nil
 			}
@@ -162,7 +163,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "q", "esc":
 			return m, tea.Quit
 		case "?":
-			m.help = !m.help
+			m.help, m.about = !m.help, false
+		case "a":
+			m.about, m.help = !m.about, false
 		case "0", "1", "2", "3":
 			m.focus = int(k[0] - '0')
 		case "tab", "right", "l", "shift+tab", "left", "h":
@@ -440,6 +443,8 @@ func (m model) mainPanel(w, h int) string {
 		return panel("[0] Tuner", "any key: back", m.tunerLines(inner), w, h, true)
 	case m.help:
 		return panel("[0] Keys", "any key: back", helpLines(), w, h, true)
+	case m.about:
+		return panel("[0] About", "any key: back", aboutLines(), w, h, true)
 	case len(m.songs) == 0:
 		return panel("[0] Now playing", "", []string{sMuted.Render("Add songs to presets.json")}, w, h, false)
 	}
@@ -492,11 +497,11 @@ func (m model) logPanel(w, h int) string {
 // statusBar is the bottom line: key hints on the left; recording, bypass and the name on the right.
 func (m model) statusBar() string {
 	var left string
-	if m.tuner || m.help {
+	if m.tuner || m.help || m.about {
 		left = keyHelp([][2]string{{"any key", "back"}, {"ctrl+c", "quit"}})
 	} else {
 		left = keyHelp([][2]string{{"1-3", "panel"}, {"↑↓", "move"}, {"⏎", "play"}, {"t", "tuner"},
-			{"r", "record"}, {"b", "bypass"}, {"-/+", "volume"}, {"?", "keys"}, {"q", "quit"}})
+			{"r", "record"}, {"b", "bypass"}, {"-/+", "volume"}, {"a", "about"}, {"?", "keys"}, {"q", "quit"}})
 	}
 	var right []string
 	if m.rig.Rec.Active() {
@@ -536,6 +541,7 @@ func helpLines() []string {
 		{"b", "bypass: hear the dry guitar"},
 		{"i  o", "next input / output device"},
 		{"L", "buffer size (latency)"},
+		{"a", "about: version, commit, author, GitHub link"},
 		{"?", "this list"},
 		{"q  esc", "quit"},
 	}
@@ -544,6 +550,36 @@ func helpLines() []string {
 		out = append(out, sKey.Width(16).Render(k[0])+sText.Render(k[1]))
 	}
 	return out
+}
+
+// aboutLines shows the version, commit, author and links; the links are clickable in most terminals.
+func aboutLines() []string {
+	b := Build()
+	row := func(k, v string) string { return sMuted.Width(10).Render(k) + v }
+	link := func(url, text string) string { return hyperlink(url, sKey.Render(text)) }
+	lines := []string{
+		sTitle.Render("🎸 lazyguitarist"),
+		sText.Render("Lazy guitar effects for Linux. Pick a song, plug in, play."),
+		"",
+		row("Version", link(b.URL, b.Version)),
+	}
+	if b.Commit != "" {
+		c := link(repoURL+"/commit/"+b.Commit, shortRev(b.Commit))
+		if b.Time != "" {
+			c += sMuted.Render("  " + b.Time)
+		}
+		if b.Dirty {
+			c += sMuted.Render("  (with local changes)")
+		}
+		lines = append(lines, row("Commit", c))
+	}
+	return append(lines,
+		row("Author", link(authorURL, author)),
+		row("GitHub", link(repoURL, strings.TrimPrefix(repoURL, "https://"))),
+		row("License", sText.Render("MIT")),
+		"",
+		sMuted.Render("Built on Guitarix, PipeWire and Bubble Tea."),
+	)
 }
 
 // ---------------------------------------------------------------- widgets

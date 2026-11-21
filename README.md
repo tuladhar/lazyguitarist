@@ -108,6 +108,7 @@ lazyguitarist --version  # the version (also bottom right in the app; click it t
 | `-` / `+` | output volume (starts at -12 dB); in Rig, change the setting under the cursor (e.g. input `GAIN`) |
 | `i` / `o` | switch input / output device |
 | `L` | buffer size 64 / 128 / 256 (lower = less latency, more risk of crackles) |
+| `a` | about: version, commit, author and GitHub link (clickable) |
 | `?` | list every key |
 | `q` | quit |
 
