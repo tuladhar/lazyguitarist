@@ -514,7 +514,7 @@ func (m model) statusBar() string {
 	if m.rig.Bypass {
 		right = append(right, sBadge.Render("BYPASS"))
 	}
-	right = append(right, sTitle.Render("🎸 lazyguitarist "+Version()))
+	right = append(right, hyperlink(VersionURL(), sTitle.Render("🎸 "+Version())))
 	r := strings.Join(right, " ")
 	left = ansi.Truncate(" "+left, max(0, m.w-lipgloss.Width(r)-1), "…")
 	return left + strings.Repeat(" ", max(1, m.w-lipgloss.Width(left)-lipgloss.Width(r))) + r

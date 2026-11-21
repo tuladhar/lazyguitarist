@@ -91,7 +91,7 @@ ln -s "$PWD/lazyguitarist" ~/.local/bin/lazyguitarist   # optional: run it from 
 lazyguitarist            # preset menu
 lazyguitarist --tuner    # open straight into the tuner
 lazyguitarist --check    # list audio devices and what lazyguitarist would use
-lazyguitarist --version  # the version (also shown bottom right in the app)
+lazyguitarist --version  # the version (also bottom right in the app; click it to open the commit or release)
 ```
 
 ### Keys
