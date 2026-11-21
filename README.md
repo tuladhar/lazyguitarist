@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/logo.png" alt="lazyguitarist logo: a sleepy guitar napping on an amp" width="280"></p>
+
 # lazyguitarist
 
 **Lazy guitar effects for Linux.** Pick a song, plug in, play. No pedalboard, no patching, no fiddling with knobs.
