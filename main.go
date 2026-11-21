@@ -96,7 +96,12 @@ func main() {
 	paramsOf := flag.String("params", "", "show the settings of an effect (or \"units\" for the list) and exit")
 	doValidate := flag.Bool("validate", false, "check presets.json against Guitarix and exit")
 	doCalibrate := flag.Bool("calibrate", false, "suggest level_db for songs matching the argument (or all) and exit")
+	showVersion := flag.Bool("version", false, "print the version and exit")
 	flag.Parse()
+	if *showVersion {
+		fmt.Println("lazyguitarist", Version())
+		return
+	}
 
 	if *doCheck {
 		check()
