@@ -97,16 +97,22 @@ lazyguitarist --check    # list audio devices and what lazyguitarist would use
 
 | Key | Action |
 |---|---|
-| `↑`/`↓` + `Enter` | load a preset (any song) |
-| `1`–`9` | load part 1–9 of the current song |
-| `t` | tuner (any key goes back) |
-| `r` | start / stop recording |
+| `↑`/`↓` or `j`/`k` | move in the focused list |
+| `Tab`, `←`/`→` or `h`/`l` | switch between the Songs and Parts panels |
+| `Enter` / `Space` | play the part under the cursor |
+| `1`–`9` | play part 1–9 of the current song |
+| `t` | tuner, inside the main panel (any key goes back) |
+| `r` | start / stop recording (`● REC` shows bottom right) |
 | `b` | bypass all effects (dry guitar) |
 | `-` / `+` | output volume (starts at -12 dB) |
 | `[` / `]` | input gain on the dongle |
 | `i` / `o` | switch input / output device |
-| `l` | buffer size 64 / 128 / 256 (lower = less latency, more risk of crackles) |
+| `L` | buffer size 64 / 128 / 256 (lower = less latency, more risk of crackles) |
+| `?` | list every key |
 | `q` | quit |
+
+The screen is laid out like lazygit and fills the terminal: **Songs**, **Parts** and **Rig** on the left, the
+part's details (or the tuner) and a **Log** of what happened on the right, and the keys along the bottom.
 
 ## My setup (known good)
 
