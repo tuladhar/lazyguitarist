@@ -184,6 +184,7 @@ type Rig struct {
 	Bypass     bool
 	Status     string
 	StatusBad  bool
+	Log        []LogLine // every status message, newest last, for the Log panel
 	Rec        Recorder
 	gain       int
 	gainAt     time.Time
@@ -226,8 +227,19 @@ func (r *Rig) Stop() (string, time.Duration) {
 	return path, d
 }
 
+// LogLine is one message in the Log panel.
+type LogLine struct {
+	At   time.Time
+	Text string
+	Bad  bool
+}
+
 func (r *Rig) setStatus(bad bool, format string, a ...any) {
 	r.Status, r.StatusBad = fmt.Sprintf(format, a...), bad
+	r.Log = append(r.Log, LogLine{time.Now(), r.Status, bad})
+	if len(r.Log) > 200 {
+		r.Log = r.Log[len(r.Log)-200:]
+	}
 }
 
 func (r *Rig) Rewire(wantIn, wantOut string) {
@@ -385,7 +397,7 @@ func (r *Rig) Apply(s *Song, p *Part) {
 		sort.Strings(unknown)
 		r.setStatus(true, "presets.json: unknown %s", strings.Join(unknown, ", "))
 	} else {
-		r.Status = ""
+		r.setStatus(false, "Playing %s › %s", s.Song, p.Name)
 	}
 }
 
@@ -420,7 +432,7 @@ func (r *Rig) ToggleRecording() {
 		r.setStatus(true, "Recording failed: %v", err)
 		return
 	}
-	r.Status = ""
+	r.setStatus(false, "Recording… press r to stop")
 }
 
 // ---------------------------------------------------------------- tuner math
