@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"math"
+	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -67,22 +69,26 @@ const (
 )
 
 type model struct {
-	rig    *Rig
-	songs  []Song
-	song   int // cursor in the Songs panel
-	part   int // cursor in the Parts panel (a part of songs[song])
-	focus  int
-	rigRow int // cursor in the Rig panel
-	tuner  bool
-	help   bool
-	about  bool
-	w, h   int
-	freq   float64 // smoothed tuner frequency (0 = no note)
-	seenAt time.Time
+	rig       *Rig
+	songs     []Song
+	song      int             // the selected song (its parts are in the Parts panel)
+	row       int             // cursor in the Songs tree (see treeRows)
+	open      map[string]bool // artists unfolded in the Songs tree
+	query     string          // Songs filter, typed after /
+	searching bool            // typing the filter
+	part      int             // cursor in the Parts panel (a part of songs[song])
+	focus     int
+	rigRow    int // cursor in the Rig panel
+	tuner     bool
+	help      bool
+	about     bool
+	w, h      int
+	freq      float64 // smoothed tuner frequency (0 = no note)
+	seenAt    time.Time
 }
 
 func newModel(rig *Rig, songs []Song, startTuner bool) model {
-	m := model{rig: rig, songs: songs, tuner: startTuner, focus: focusParts}
+	m := model{rig: rig, songs: songs, tuner: startTuner, focus: focusParts, open: map[string]bool{}}
 	for si, s := range songs {
 		for pi, p := range s.Parts {
 			if len(rig.cfg.Last) == 2 && rig.cfg.Last[0] == s.Song && rig.cfg.Last[1] == p.Name {
@@ -92,8 +98,9 @@ func newModel(rig *Rig, songs []Song, startTuner bool) model {
 	}
 	if len(songs) > 0 {
 		m.load()
+		m.rowToSong() // show where we are
 	}
-	rig.setStatus(false, "Tip: 1 Songs · 2 Parts · 3 Rig · 0 main panel; j/k move, enter plays, ? shows every key")
+	rig.setStatus(false, "Tip: 1 Songs · 2 Parts · 3 Rig · 0 main panel; j/k move, enter plays, / search, ? every key")
 	if startTuner {
 		rig.Mute(true)
 	}
@@ -101,6 +108,91 @@ func newModel(rig *Rig, songs []Song, startTuner bool) model {
 }
 
 func (m *model) curSong() *Song { return &m.songs[m.song] }
+
+// treeRow is one line of the Songs tree: an artist folder (song == -1) or one of its songs.
+type treeRow struct {
+	artist string
+	song   int // index into songs, or -1 for the artist row
+	count  int // songs under the artist (artist rows only)
+}
+
+// treeRows groups the songs by artist (A–Z, songs A–Z). Artists are folded until opened with enter; while
+// a search filter is set, only matching songs show and their artists are unfolded.
+func (m *model) treeRows() []treeRow {
+	q := strings.ToLower(strings.TrimSpace(m.query))
+	byArtist := map[string][]int{}
+	var artists []string
+	for i, s := range m.songs {
+		if q != "" {
+			hay := strings.ToLower(s.Artist + " " + s.Song + " " + s.Album)
+			for _, p := range s.Parts {
+				hay += " " + strings.ToLower(p.Name)
+			}
+			if !strings.Contains(hay, q) {
+				continue
+			}
+		}
+		if _, ok := byArtist[s.Artist]; !ok {
+			artists = append(artists, s.Artist)
+		}
+		byArtist[s.Artist] = append(byArtist[s.Artist], i)
+	}
+	lower := func(a string) string { return strings.ToLower(strings.TrimPrefix(a, "The ")) }
+	sort.SliceStable(artists, func(i, j int) bool { return lower(artists[i]) < lower(artists[j]) })
+	var rows []treeRow
+	for _, a := range artists {
+		idx := byArtist[a]
+		sort.SliceStable(idx, func(i, j int) bool {
+			return strings.ToLower(m.songs[idx[i]].Song) < strings.ToLower(m.songs[idx[j]].Song)
+		})
+		rows = append(rows, treeRow{artist: a, song: -1, count: len(idx)})
+		if m.open[a] || q != "" {
+			for _, i := range idx {
+				rows = append(rows, treeRow{artist: a, song: i})
+			}
+		}
+	}
+	return rows
+}
+
+// firstSong is the first song row of the tree (where a search lands), or 0.
+func (m *model) firstSong() int {
+	for i, r := range m.treeRows() {
+		if r.song >= 0 {
+			return i
+		}
+	}
+	return 0
+}
+
+// rowToSong unfolds the selected song's artist and puts the tree cursor on the song.
+func (m *model) rowToSong() {
+	m.open[m.songs[m.song].Artist] = true
+	for i, r := range m.treeRows() {
+		if r.song == m.song {
+			m.row = i
+			return
+		}
+	}
+}
+
+// selectRow moves the tree cursor and, on a song row, selects that song (on its playing part, if any).
+func (m *model) selectRow(i int) {
+	rows := m.treeRows()
+	if len(rows) == 0 {
+		m.row = 0
+		return
+	}
+	m.row = max(0, min(i, len(rows)-1))
+	if si := rows[m.row].song; si >= 0 && si != m.song {
+		m.song, m.part = si, 0
+		for pi := range m.songs[si].Parts {
+			if &m.songs[si].Parts[pi] == m.rig.CurPart {
+				m.part = pi
+			}
+		}
+	}
+}
 
 // load applies the part under the cursor.
 func (m *model) load() {
@@ -153,6 +245,38 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, nil
 			}
 		}
+		if m.searching { // typing the Songs filter: keys are text
+			switch msg.Type {
+			case tea.KeyEsc:
+				m.query, m.searching = "", false
+				m.rowToSong()
+			case tea.KeyEnter: // keep the filter; esc clears it and keeps the chosen song in view
+				m.searching = false
+			case tea.KeyBackspace:
+				if q := []rune(m.query); len(q) > 0 {
+					m.query = string(q[:len(q)-1])
+				}
+				m.selectRow(m.firstSong())
+			case tea.KeyCtrlU:
+				m.query = ""
+				m.selectRow(m.firstSong())
+			case tea.KeyUp, tea.KeyDown:
+				d := 1
+				if msg.Type == tea.KeyUp {
+					d = -1
+				}
+				m.selectRow(m.row + d)
+			case tea.KeyRunes, tea.KeySpace:
+				m.query += string(msg.Runes)
+				m.selectRow(m.firstSong())
+			}
+			return m, nil
+		}
+		if k == "esc" && m.query != "" { // esc clears a filter before it quits
+			m.query = ""
+			m.rowToSong()
+			return m, nil
+		}
 		if len(m.songs) == 0 {
 			if k == "q" || k == "esc" {
 				return m, tea.Quit
@@ -166,6 +290,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.help, m.about = !m.help, false
 		case "a":
 			m.about, m.help = !m.about, false
+		case "/":
+			m.focus, m.searching = focusSongs, true
 		case "0", "1", "2", "3":
 			m.focus = int(k[0] - '0')
 		case "tab", "right", "l", "shift+tab", "left", "h":
@@ -188,21 +314,31 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case m.focus == focusRig:
 				m.rigRow = (m.rigRow + d + rigRows) % rigRows
 			case m.focus == focusSongs:
-				m.song = (m.song + d + len(m.songs)) % len(m.songs)
-				m.part = 0
-				for pi := range m.curSong().Parts { // land on the playing part if this song is playing
-					if &m.curSong().Parts[pi] == r.CurPart {
-						m.part = pi
-					}
+				if n := len(m.treeRows()); n > 0 {
+					m.selectRow((m.row + d + n) % n)
 				}
 			case m.focus == focusParts && len(m.curSong().Parts) > 0:
 				n := len(m.curSong().Parts)
 				m.part = (m.part + d + n) % n
 			}
 		case "enter", " ":
-			if m.focus == focusRig {
+			switch {
+			case m.focus == focusRig:
 				m.adjustRig(1)
-			} else {
+			case m.focus == focusSongs:
+				rows := m.treeRows()
+				if m.row >= len(rows) {
+					break
+				}
+				if row := rows[m.row]; row.song < 0 { // artist folder: unfold / fold
+					if m.query == "" {
+						m.open[row.artist] = !m.open[row.artist]
+					}
+				} else {
+					m.load()
+					m.focus = focusParts
+				}
+			default:
 				m.load()
 				m.focus = focusParts
 			}
@@ -292,7 +428,7 @@ func (m model) View() string {
 	} else {
 		// narrow: one column, no Log
 		rig := m.rigPanel(m.w)
-		songsH := min(len(m.songs)+2, 7)
+		songsH := min(len(m.treeRows())+2, 8)
 		partsH := 4
 		if len(m.songs) > 0 {
 			partsH = min(len(m.curSong().Parts)+2, 8)
@@ -348,31 +484,77 @@ func window(n, sel, rows int) (int, int) {
 }
 
 func (m model) songsPanel(w, h int) string {
+	tree := m.treeRows()
 	var rows []string
-	for si, s := range m.songs {
-		playing := m.rig.CurSong == &m.songs[si]
+	focused := m.focus == focusSongs
+	for i, t := range tree {
+		var text string
+		playing := false
+		if t.song < 0 {
+			fold := "▸ "
+			if m.open[t.artist] || m.query != "" {
+				fold = "▾ "
+			}
+			playing = m.rig.CurSong != nil && m.rig.CurSong.Artist == t.artist
+			text = sMuted.Render(fold) + sBold.Render(t.artist)
+			if !(m.open[t.artist] || m.query != "") {
+				text += sMuted.Render(fmt.Sprintf(" (%d)", t.count))
+			}
+		} else {
+			playing = m.rig.CurSong == &m.songs[t.song]
+			branch := "├ "
+			if i+1 == len(tree) || tree[i+1].song < 0 {
+				branch = "└ "
+			}
+			text = "  " + sMuted.Render(branch) + m.songs[t.song].Song
+		}
 		marker := "  "
 		if playing {
 			marker = sActive.Render("▶ ")
 		}
-		name := s.Artist + " – " + s.Song
 		switch {
-		case si == m.song && m.focus == focusSongs:
-			rows = append(rows, marker+sSel.Render(" "+name+strings.Repeat(" ", max(0, w-7-lipgloss.Width(name)))))
-		case si == m.song:
-			rows = append(rows, marker+sSelDim.Render(" "+name))
+		case i == m.row && focused:
+			plain := ansi.Strip(text)
+			rows = append(rows, marker+sSel.Render(" "+plain+strings.Repeat(" ", max(0, w-7-lipgloss.Width(plain)))))
+		case t.song >= 0 && t.song == m.song:
+			rows = append(rows, marker+sSelDim.Render(" "+ansi.Strip(text)))
 		case playing:
-			rows = append(rows, marker+sActive.Render(" "+name))
+			rows = append(rows, marker+sActive.Render(" "+ansi.Strip(text)))
+		case t.song < 0:
+			rows = append(rows, marker+" "+text)
 		default:
-			rows = append(rows, marker+sText.Render(" "+name))
+			rows = append(rows, marker+" "+sText.Render(text))
 		}
 	}
-	a, b := window(len(rows), m.song, h-2)
-	note := ""
-	if len(m.songs) > 0 {
-		note = fmt.Sprintf("%d of %d", m.song+1, len(m.songs))
+	if len(tree) == 0 {
+		rows = []string{sMuted.Render("no song matches " + strconv.Quote(m.query))}
 	}
-	return panel("[1] Songs", note, rows[a:b], w, h, m.focus == focusSongs)
+	bodyH := h - 2
+	var search string
+	if m.searching || m.query != "" {
+		cursor := ""
+		if m.searching {
+			cursor = "█"
+		}
+		search = sKey.Render("/") + sText.Render(m.query+cursor)
+		bodyH--
+	}
+	a, b := window(len(rows), m.row, bodyH)
+	rows = rows[a:b]
+	if search != "" {
+		for len(rows) < bodyH {
+			rows = append(rows, "")
+		}
+		rows = append(rows, search)
+	}
+	note := fmt.Sprintf("%d songs", len(m.songs))
+	switch {
+	case m.searching:
+		note = "enter: done · esc: clear"
+	case m.query != "":
+		note = "esc: clear"
+	}
+	return panel("[1] Songs", note, rows, w, h, focused)
 }
 
 func (m model) partsPanel(w, h int) string {
@@ -500,7 +682,7 @@ func (m model) statusBar() string {
 	if m.tuner || m.help || m.about {
 		left = keyHelp([][2]string{{"any key", "back"}, {"ctrl+c", "quit"}})
 	} else {
-		left = keyHelp([][2]string{{"1-3", "panel"}, {"↑↓", "move"}, {"⏎", "play"}, {"t", "tuner"},
+		left = keyHelp([][2]string{{"1-3", "panel"}, {"↑↓", "move"}, {"⏎", "play"}, {"/", "search"}, {"t", "tuner"},
 			{"r", "record"}, {"b", "bypass"}, {"-/+", "volume"}, {"a", "about"}, {"?", "keys"}, {"q", "quit"}})
 	}
 	var right []string
@@ -534,7 +716,8 @@ func helpLines() []string {
 		{"1  2  3  0", "focus Songs, Parts, Rig, main panel"},
 		{"tab  ← →  h l", "next / previous panel"},
 		{"↑ ↓  j k", "move in the focused panel"},
-		{"enter  space", "play the part under the cursor (Rig: change the setting)"},
+		{"enter  space", "play the part under the cursor (Songs: open an artist; Rig: change the setting)"},
+		{"/", "search songs, artists and parts (enter: done, esc: clear)"},
 		{"- +", "output volume (Rig: change the setting under the cursor, e.g. GAIN)"},
 		{"t", "tuner (mutes the output)"},
 		{"r", "start / stop recording (saved to ~/Music/lazyguitarist)"},

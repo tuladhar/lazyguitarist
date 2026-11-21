@@ -101,7 +101,8 @@ lazyguitarist --version  # the version (also bottom right in the app; click it t
 | `1` / `2` / `3` / `0` | focus the Songs / Parts / Rig / main panel (like lazygit) |
 | `Tab`, `←`/`→` or `h`/`l` | next / previous panel |
 | `↑`/`↓` or `j`/`k` | move in the focused panel |
-| `Enter` / `Space` | play the part under the cursor (in Rig: change the setting) |
+| `Enter` / `Space` | play the part under the cursor (in Songs: open or fold an artist; in Rig: change the setting) |
+| `/` | search songs, artists and parts as you type (`Enter` keeps the filter, `Esc` clears it) |
 | `t` | tuner, inside the main panel (any key goes back) |
 | `r` | start / stop recording (`● REC` shows bottom right) |
 | `b` | bypass all effects (dry guitar) |
@@ -114,6 +115,8 @@ lazyguitarist --version  # the version (also bottom right in the app; click it t
 
 The screen is laid out like lazygit and fills the terminal: **Songs**, **Parts** and **Rig** on the left, the
 part's details (or the tuner) and a **Log** of what happened on the right, and the keys along the bottom.
+Songs is a tree grouped by artist (A–Z); artists stay folded until you open one with `Enter`, and `/` finds a
+song, artist or part as the list grows.
 
 ## My setup (known good)
 
