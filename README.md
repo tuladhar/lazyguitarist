@@ -49,6 +49,10 @@ just editing a JSON file.
 | 2 | | Verse | compressor › soft clean amp (Fender tonestack) › 2x12 › faint quarter-note echo (147 BPM) › room |
 | 3 | | Chorus | gate › light TS9 › high-gain amp (Mesa Boogie tonestack) › 4x12 › room |
 | 4 | | Solo | gate › TS9 › pushed amp (strong mids) › 4x12 › quarter-note echo (147 BPM) › reverb |
+| 1 | Santana - *Europa (Earth's Cry Heaven's Smile)* | Main melody | gate › light compressor › cranked Boogie-style amp, neck pickup, tone rolled back › 1x12 › light 375 ms echo › room reverb |
+| 2 | | Climax | gate › TS9 › harder Boogie-style amp › 1x12 › 375 ms echo › reverb |
+| 1 | Joe Satriani - *Starry Night* | Main melody | gate › TS9 › high-gain Marshall-style amp (JCM-800) › 4x12 › ~400 ms echo › reverb |
+| 2 | | Rhythm | gate › Marshall-style crunch (JCM-800) › 4x12 › room |
 
 These are by-ear approximations built from Guitarix's amp and pedal models, not copies of the original rigs.
 

@@ -733,6 +733,201 @@
           }
         }
       ]
+    },
+    {
+      "artist": "Santana",
+      "song": "Europa (Earth's Cry Heaven's Smile)",
+      "album": "Amigos (1976)",
+      "parts": [
+        {
+          "name": "Main melody (sustaining lead)",
+          "description": "Santana-style singing lead: a Boogie-like cranked preamp with the neck humbucker and the tone knob rolled back, so notes swell and sustain without fizz. Light echo, warm room reverb. Key of C minor; let long notes bloom and add slow vibrato.",
+          "level_db": -7.3,
+          "guitar": {
+            "pickup": "neck",
+            "volume": 10,
+            "tone1": 6,
+            "tone2": 8
+          },
+          "amp": {
+            "model": "12ax7",
+            "pregain": 10,
+            "drive": 3
+          },
+          "fx": {
+            "abgate": {
+              "threshold": -22,
+              "attack": 1,
+              "hold": 60,
+              "decay": 300,
+              "gaterange": -90
+            },
+            "compressor": {
+              "ratio": 3,
+              "threshold": -26,
+              "attack": 0.01,
+              "release": 0.6,
+              "knee": 6
+            },
+            "amp.tonestack": {
+              "select": "Mesa Boogie",
+              "Bass": 0.5,
+              "Middle": 0.7,
+              "Treble": 0.4
+            },
+            "cab": {
+              "select": "1x12"
+            },
+            "echo": {
+              "bpm": 160,
+              "percent": 15
+            },
+            "zita_rev1": {
+              "decay_times.mid_rt60": 2.5,
+              "output.dry_wet_mix": -0.6
+            }
+          }
+        },
+        {
+          "name": "Climax (screaming sustain)",
+          "description": "For the high, fast run at the end: the same Boogie-style lead pushed harder with a mild TS9 in front for endless sustain and feedback. Neck pickup, tone a bit brighter than the melody.",
+          "level_db": -11.4,
+          "guitar": {
+            "pickup": "neck",
+            "volume": 10,
+            "tone1": 8,
+            "tone2": 8
+          },
+          "amp": {
+            "model": "12ax7",
+            "pregain": 12,
+            "drive": 5
+          },
+          "fx": {
+            "abgate": {
+              "threshold": -22,
+              "attack": 1,
+              "hold": 60,
+              "decay": 300,
+              "gaterange": -90
+            },
+            "ts9sim": {
+              "drive": 0.55,
+              "tone": 600,
+              "level": -8
+            },
+            "amp.tonestack": {
+              "select": "Mesa Boogie",
+              "Bass": 0.45,
+              "Middle": 0.75,
+              "Treble": 0.5
+            },
+            "cab": {
+              "select": "1x12"
+            },
+            "echo": {
+              "bpm": 160,
+              "percent": 20
+            },
+            "zita_rev1": {
+              "decay_times.mid_rt60": 2.5,
+              "output.dry_wet_mix": -0.55
+            }
+          }
+        }
+      ]
+    },
+    {
+      "artist": "Joe Satriani",
+      "song": "Starry Night",
+      "album": "Strange Beautiful Music (2002)",
+      "parts": [
+        {
+          "name": "Main melody (singing lead)",
+          "description": "Satriani-style lead: bridge humbucker into a Marshall-like high-gain amp with a TS9 boost for sustain, a ~400 ms echo and some reverb. Delay time is set by ear; legato and whammy-bar shimmer sell it.",
+          "level_db": -18.8,
+          "guitar": {
+            "pickup": "bridge",
+            "volume": 10,
+            "tone1": 10,
+            "tone2": 9
+          },
+          "amp": {
+            "model": "12ax7",
+            "pregain": 10,
+            "drive": 4
+          },
+          "fx": {
+            "abgate": {
+              "threshold": -22,
+              "attack": 1,
+              "hold": 60,
+              "decay": 300,
+              "gaterange": -90
+            },
+            "ts9sim": {
+              "drive": 0.4,
+              "tone": 650,
+              "level": -8
+            },
+            "amp.tonestack": {
+              "select": "JCM-800",
+              "Bass": 0.45,
+              "Middle": 0.65,
+              "Treble": 0.6
+            },
+            "cab": {
+              "select": "4x12"
+            },
+            "echo": {
+              "bpm": 150,
+              "percent": 25
+            },
+            "zita_rev1": {
+              "decay_times.mid_rt60": 2.2,
+              "output.dry_wet_mix": -0.65
+            }
+          }
+        },
+        {
+          "name": "Rhythm (crunch)",
+          "description": "Under the melody: a Marshall-style crunch, cleaner than the lead, so chords ring. Roll the guitar volume to 8 to clean it up further.",
+          "level_db": -9.3,
+          "guitar": {
+            "pickup": "bridge",
+            "volume": 8,
+            "tone1": 10,
+            "tone2": 10
+          },
+          "amp": {
+            "model": "12ax7",
+            "pregain": 2,
+            "drive": 0
+          },
+          "fx": {
+            "abgate": {
+              "threshold": -24,
+              "attack": 1,
+              "hold": 60,
+              "decay": 400,
+              "gaterange": -90
+            },
+            "amp.tonestack": {
+              "select": "JCM-800",
+              "Bass": 0.5,
+              "Middle": 0.55,
+              "Treble": 0.6
+            },
+            "cab": {
+              "select": "4x12"
+            },
+            "zita_rev1": {
+              "decay_times.mid_rt60": 1.8,
+              "output.dry_wet_mix": -0.8
+            }
+          }
+        }
+      ]
     }
   ]
 }
