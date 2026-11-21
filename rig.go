@@ -315,12 +315,15 @@ func (r *Rig) InputGain() int {
 	return r.gain
 }
 
+// ChangeInputGain stops at 100%: above that PipeWire only adds digital gain after the
+// already-maxed hardware boost, which clips and is not audible as "less" when lowered back.
+// A gain left above 100% snaps to 100% on the next press.
 func (r *Rig) ChangeInputGain(step int) {
 	g := r.InputGain()
 	if g < 0 {
 		return
 	}
-	g = max(0, min(150, g+step))
+	g = max(0, min(100, g+step))
 	SetSourceVolume(r.Input, g)
 	r.gain, r.gainAt = g, time.Now()
 }

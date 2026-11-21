@@ -132,8 +132,9 @@ part's details (or the tuner) and a **Log** of what happened on the right, and t
   `pw-metadata -n settings 0 clock.force-quantum 128` while it runs and restores it on quit.
 - **Output:** the wired headphone jack (`o` to pick). Plugging the headphones into the dongle itself saves another
   ~1–2 ms, because input and output then share one clock.
-- **Input gain:** start at 100% and lower it with `[` if clean tones distort or high-gain sounds fizzy. Mic inputs
-  are hot.
+- **Input gain:** start at 100% (the most it goes) and lower it with `[` if clean tones distort or high-gain sounds
+  fizzy. Mic inputs are hot: on a laptop's mic jack the hardware boost only starts dropping below 100%, so try 50–75%.
+  For more gain, raise the preset's amp `pregain` instead.
 - **Volume:** start at -12 dB with the headphones off your ears, then bring it up.
 - **Firewall:** keep `ufw` on (Omarchy's default). Guitarix's control port has no password and listens on all
   interfaces while lazyguitarist runs, and ufw blocks it from the network.
