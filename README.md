@@ -16,7 +16,7 @@ just editing a JSON file.
 
 ## Features
 
-- **Song presets.** Each part of a song gets its own effect chain, and `1`–`9` switches between the parts of the song you're on, e.g.
+- **Song presets.** Each part of a song gets its own effect chain, and switching parts (`2` for the Parts panel, then `j`/`k` and `Enter`) is instant, e.g.
   clean verse → solo. All presets are evened out to the same loudness, so switching never blasts your ears.
 - **Tuner.** Standard tuning (E A D G B E). It tells you which string you're on and whether to **tighten** or
   **loosen** it, and by how much. The amp is muted while you tune, and 50/60 Hz cable hum is ignored.
@@ -32,7 +32,7 @@ just editing a JSON file.
 
 ### Included presets
 
-| Key | Song | Part | Chain |
+| # | Song | Part | Chain |
 |---|---|---|---|
 | 1 | Pink Floyd - *Coming Back to Life* | Intro & verses | compressor › clean amp › Twin tonestack › 4x12 › 450 ms echo › hall reverb |
 | 2 | | Solo | gate › compressor › TS9 › pushed amp › 4x12 › 450 ms echo › reverb |
@@ -97,14 +97,14 @@ lazyguitarist --check    # list audio devices and what lazyguitarist would use
 
 | Key | Action |
 |---|---|
-| `↑`/`↓` or `j`/`k` | move in the focused list |
-| `Tab`, `←`/`→` or `h`/`l` | switch between the Songs and Parts panels |
-| `Enter` / `Space` | play the part under the cursor |
-| `1`–`9` | play part 1–9 of the current song |
+| `1` / `2` / `3` / `0` | focus the Songs / Parts / Rig / main panel (like lazygit) |
+| `Tab`, `←`/`→` or `h`/`l` | next / previous panel |
+| `↑`/`↓` or `j`/`k` | move in the focused panel |
+| `Enter` / `Space` | play the part under the cursor (in Rig: change the setting) |
 | `t` | tuner, inside the main panel (any key goes back) |
 | `r` | start / stop recording (`● REC` shows bottom right) |
 | `b` | bypass all effects (dry guitar) |
-| `-` / `+` | output volume (starts at -12 dB) |
+| `-` / `+` | output volume (starts at -12 dB); in Rig, change the setting under the cursor |
 | `[` / `]` | input gain on the dongle |
 | `i` / `o` | switch input / output device |
 | `L` | buffer size 64 / 128 / 256 (lower = less latency, more risk of crackles) |
@@ -155,8 +155,8 @@ This repo ships a [Claude Code](https://claude.com/claude-code) skill. Open Clau
 
 It looks up how the guitarist got the tone on that recording (amp, pedals, delay time from the song's tempo),
 builds parts like "Main riff" and "Solo" from lazyguitarist's effects, checks every setting against Guitarix, matches
-the loudness to your other presets, and adds the song to the README table. Restart `lazyguitarist`, pick the song and press
-`1`, `2`, `3`… for its parts. Not quite right? Just say "darker", "more gain" or "less echo".
+the loudness to your other presets, and adds the song to the README table. Restart `lazyguitarist`, pick the song in Songs and
+its parts in Parts. Not quite right? Just say "darker", "more gain" or "less echo".
 
 **Works best with the original song.** Give the path to an MP3 of the recording and the skill learns from it:
 tempo (so echoes land on the beat), tuning and key, where the intro, verse, chorus and solo are, and how bright,

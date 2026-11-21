@@ -141,8 +141,8 @@ each part, so the new song is as loud as the others. Copy those values into the 
 
 ## 7. Update the README
 
-Add the new parts to the **Included presets** table in `README.md`. The `Key` column restarts at 1
-for each song (number keys pick parts of the current song), with a short chain summary like the existing rows.
+Add the new parts to the **Included presets** table in `README.md`. The `#` column restarts at 1
+for each song (it matches the numbers in the Parts panel), with a short chain summary like the existing rows.
 
 ## 8. Tell the user
 
@@ -151,7 +151,7 @@ Give a short summary:
 - the song and parts added, with each chain in one line;
 - any non-standard tuning;
 - that they need to restart `lazyguitarist` (or `go build -o lazyguitarist .` first if they run the binary), then
-  pick the song and press `1`, `2`, `3`… for its parts.
+  pick the song in the Songs panel and its parts in the Parts panel.
 
 The presets are educated guesses from research. Invite them to say "darker", "more gain", "less
 echo", etc., and adjust the preset, then re-run steps 5–6.

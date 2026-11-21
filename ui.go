@@ -45,10 +45,25 @@ var (
 
 type tickMsg time.Time
 
-// focus is the list panel that ↑/↓ move in.
+// focus is the panel that keys act on; its number is the key that focuses it, like lazygit.
 const (
-	focusSongs = iota
+	focusMain = iota
+	focusSongs
 	focusParts
+	focusRig
+)
+
+// focusOrder is the order tab moves through the panels.
+var focusOrder = []int{focusSongs, focusParts, focusRig, focusMain}
+
+// rigRows are the settings in the Rig panel, in display order.
+const (
+	rigIn = iota
+	rigOut
+	rigVol
+	rigGain
+	rigBuffer
+	rigRows
 )
 
 type model struct {
@@ -57,6 +72,7 @@ type model struct {
 	song   int // cursor in the Songs panel
 	part   int // cursor in the Parts panel (a part of songs[song])
 	focus  int
+	rigRow int // cursor in the Rig panel
 	tuner  bool
 	help   bool
 	w, h   int
@@ -76,7 +92,7 @@ func newModel(rig *Rig, songs []Song, startTuner bool) model {
 	if len(songs) > 0 {
 		m.load()
 	}
-	rig.setStatus(false, "Tip: tab switches between Songs and Parts, 1-9 picks a part, ? shows every key")
+	rig.setStatus(false, "Tip: 1 Songs · 2 Parts · 3 Rig · 0 main panel; j/k move, enter plays, ? shows every key")
 	if startTuner {
 		rig.Mute(true)
 	}
@@ -147,14 +163,28 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		case "?":
 			m.help = !m.help
-		case "tab", "shift+tab", "left", "right", "h", "l":
-			m.focus = 1 - m.focus
+		case "0", "1", "2", "3":
+			m.focus = int(k[0] - '0')
+		case "tab", "right", "l", "shift+tab", "left", "h":
+			d := 1
+			if k == "shift+tab" || k == "left" || k == "h" {
+				d = len(focusOrder) - 1
+			}
+			for i, f := range focusOrder {
+				if f == m.focus {
+					m.focus = focusOrder[(i+d)%len(focusOrder)]
+					break
+				}
+			}
 		case "up", "k", "down", "j":
 			d := 1
 			if k == "up" || k == "k" {
 				d = -1
 			}
-			if m.focus == focusSongs {
+			switch {
+			case m.focus == focusRig:
+				m.rigRow = (m.rigRow + d + rigRows) % rigRows
+			case m.focus == focusSongs:
 				m.song = (m.song + d + len(m.songs)) % len(m.songs)
 				m.part = 0
 				for pi := range m.curSong().Parts { // land on the playing part if this song is playing
@@ -162,17 +192,16 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 						m.part = pi
 					}
 				}
-			} else if n := len(m.curSong().Parts); n > 0 {
+			case m.focus == focusParts && len(m.curSong().Parts) > 0:
+				n := len(m.curSong().Parts)
 				m.part = (m.part + d + n) % n
 			}
 		case "enter", " ":
-			m.load()
-			m.focus = focusParts
-		case "1", "2", "3", "4", "5", "6", "7", "8", "9":
-			// numbers pick a part of the current song, so every song has its own 1, 2, 3…
-			if i := int(k[0] - '1'); i < len(m.curSong().Parts) {
-				m.part = i
+			if m.focus == focusRig {
+				m.adjustRig(1)
+			} else {
 				m.load()
+				m.focus = focusParts
 			}
 		case "t":
 			m.tuner, m.freq = true, 0
@@ -183,9 +212,17 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "b":
 			r.ToggleBypass()
 		case "+", "=":
-			r.ChangeVolume(1)
+			if m.focus == focusRig {
+				m.adjustRig(1)
+			} else {
+				r.ChangeVolume(1)
+			}
 		case "-", "_":
-			r.ChangeVolume(-1)
+			if m.focus == focusRig {
+				m.adjustRig(-1)
+			} else {
+				r.ChangeVolume(-1)
+			}
 		case "]":
 			r.ChangeInputGain(5)
 		case "[":
@@ -195,16 +232,38 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "o":
 			r.Cycle(false)
 		case "L":
-			q := r.Quantum()
-			for i, v := range quantums {
-				if v == q {
-					r.SetQuantum(quantums[(i+1)%len(quantums)])
-				}
-			}
+			nextQuantum(r, 1)
 		}
 		r.cfg.Save()
 	}
 	return m, nil
+}
+
+// adjustRig changes the Rig setting under the cursor up (d = 1) or down (d = -1).
+func (m *model) adjustRig(d int) {
+	r := m.rig
+	switch m.rigRow {
+	case rigIn:
+		r.Cycle(true)
+	case rigOut:
+		r.Cycle(false)
+	case rigVol:
+		r.ChangeVolume(float64(d))
+	case rigGain:
+		r.ChangeInputGain(5 * d)
+	case rigBuffer:
+		nextQuantum(r, d)
+	}
+}
+
+func nextQuantum(r *Rig, d int) {
+	q := r.Quantum()
+	for i, v := range quantums {
+		if v == q {
+			r.SetQuantum(quantums[(i+d+len(quantums))%len(quantums)])
+			return
+		}
+	}
 }
 
 // ---------------------------------------------------------------- layout
@@ -356,14 +415,25 @@ func (m model) rigPanel(w int) string {
 		gainTxt = fmt.Sprintf("%d%%", gain)
 	}
 	meterW := max(6, min(24, inner-16))
-	body := []string{
-		label.Render("IN") + sText.Render(truncate(descOf(r.Input, r.Sources), inner-6)),
-		label.Render("OUT") + sText.Render(truncate(descOf(r.Output, r.Sinks), inner-6)),
-		label.Render("VOL") + meter(r.VolumeDB(), meterW) + sText.Render(fmt.Sprintf(" %+.0f dB", r.VolumeDB())),
-		label.Render("GAIN") + sText.Render(gainTxt) + sMuted.Render("   buffer ") +
-			sText.Render(fmt.Sprintf("%d · %.1f ms", r.Quantum(), r.LatencyMs())),
+	focused := m.focus == focusRig
+	row := func(i int, name, value string) string {
+		if focused && i == m.rigRow {
+			return sSel.Render(fmt.Sprintf("%-6s", name)) + value
+		}
+		return label.Render(name) + value
 	}
-	return panel("[3] Rig", "", body, w, len(body)+2, false)
+	body := []string{
+		row(rigIn, "IN", sText.Render(truncate(descOf(r.Input, r.Sources), inner-6))),
+		row(rigOut, "OUT", sText.Render(truncate(descOf(r.Output, r.Sinks), inner-6))),
+		row(rigVol, "VOL", meter(r.VolumeDB(), meterW)+sText.Render(fmt.Sprintf(" %+.0f dB", r.VolumeDB()))),
+		row(rigGain, "GAIN", sText.Render(gainTxt)),
+		row(rigBuffer, "BUF", sText.Render(fmt.Sprintf("%d · %.1f ms", r.Quantum(), r.LatencyMs()))),
+	}
+	note := ""
+	if focused {
+		note = "-/+ change"
+	}
+	return panel("[3] Rig", note, body, w, len(body)+2, focused)
 }
 
 // mainPanel shows the tuner, the key list, or the part under the cursor.
@@ -403,7 +473,7 @@ func (m model) mainPanel(w, h int) string {
 	if r.Bypass {
 		body = append(body, "", sBadge.Render("BYPASS · dry guitar"))
 	}
-	return panel(title, "", body, w, h, false)
+	return panel(title, "", body, w, h, m.focus == focusMain)
 }
 
 func (m model) logPanel(w, h int) string {
@@ -429,7 +499,7 @@ func (m model) statusBar() string {
 	if m.tuner || m.help {
 		left = keyHelp([][2]string{{"any key", "back"}, {"ctrl+c", "quit"}})
 	} else {
-		left = keyHelp([][2]string{{"↑↓", "move"}, {"tab", "panel"}, {"⏎", "play"}, {"1-9", "part"}, {"t", "tuner"},
+		left = keyHelp([][2]string{{"1-3", "panel"}, {"↑↓", "move"}, {"⏎", "play"}, {"t", "tuner"},
 			{"r", "record"}, {"b", "bypass"}, {"-/+", "volume"}, {"?", "keys"}, {"q", "quit"}})
 	}
 	var right []string
@@ -460,14 +530,14 @@ func keyHelp(keys [][2]string) string {
 
 func helpLines() []string {
 	keys := [][2]string{
-		{"↑ ↓  j k", "move in the focused list"},
-		{"tab  ← →  h l", "switch between Songs and Parts"},
-		{"enter  space", "play the part under the cursor"},
-		{"1 – 9", "play part 1–9 of the current song"},
+		{"1  2  3  0", "focus Songs, Parts, Rig, main panel"},
+		{"tab  ← →  h l", "next / previous panel"},
+		{"↑ ↓  j k", "move in the focused panel"},
+		{"enter  space", "play the part under the cursor (Rig: change the setting)"},
+		{"- +", "output volume (Rig: change the setting under the cursor)"},
 		{"t", "tuner (mutes the output)"},
 		{"r", "start / stop recording (saved to ~/Music/lazyguitarist)"},
 		{"b", "bypass: hear the dry guitar"},
-		{"- +", "output volume"},
 		{"[ ]", "input gain of the guitar dongle"},
 		{"i  o", "next input / output device"},
 		{"L", "buffer size (latency)"},
