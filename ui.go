@@ -515,7 +515,9 @@ func (m model) statusBar() string {
 	if m.rig.Bypass {
 		right = append(right, sBadge.Render("BYPASS"))
 	}
-	right = append(right, hyperlink(VersionURL(), sTitle.Render("🎸 "+Version())))
+	// like lazygit's bottom right: an underlined "Ask Question" link, then the version (also a link)
+	ask := lipgloss.NewStyle().Foreground(lipgloss.Color("3")).Underline(true).Render("Ask Question")
+	right = append(right, hyperlink(repoURL+"/issues/new", ask), hyperlink(VersionURL(), Version()))
 	r := strings.Join(right, " ")
 	left = ansi.Truncate(" "+left, max(0, m.w-lipgloss.Width(r)-1), "…")
 	return left + strings.Repeat(" ", max(1, m.w-lipgloss.Width(left)-lipgloss.Width(r))) + r
