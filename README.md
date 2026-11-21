@@ -105,8 +105,7 @@ lazyguitarist --version  # the version (also bottom right in the app; click it t
 | `t` | tuner, inside the main panel (any key goes back) |
 | `r` | start / stop recording (`● REC` shows bottom right) |
 | `b` | bypass all effects (dry guitar) |
-| `-` / `+` | output volume (starts at -12 dB); in Rig, change the setting under the cursor |
-| `[` / `]` | input gain on the dongle |
+| `-` / `+` | output volume (starts at -12 dB); in Rig, change the setting under the cursor (e.g. input `GAIN`) |
 | `i` / `o` | switch input / output device |
 | `L` | buffer size 64 / 128 / 256 (lower = less latency, more risk of crackles) |
 | `?` | list every key |
@@ -133,7 +132,7 @@ part's details (or the tuner) and a **Log** of what happened on the right, and t
   `pw-metadata -n settings 0 clock.force-quantum 128` while it runs and restores it on quit.
 - **Output:** the wired headphone jack (`o` to pick). Plugging the headphones into the dongle itself saves another
   ~1–2 ms, because input and output then share one clock.
-- **Input gain:** start at 100% (the most it goes) and lower it with `[` if clean tones distort or high-gain sounds
+- **Input gain:** start at 100% (the most it goes) and lower it in the Rig panel (`3`, `j` to `GAIN`, `-`) if clean tones distort or high-gain sounds
   fizzy. Mic inputs are hot: on a laptop's mic jack the hardware boost only starts dropping below 100%, so try 50–75%.
   For more gain, raise the preset's amp `pregain` instead.
 - **Volume:** start at -12 dB with the headphones off your ears, then bring it up.

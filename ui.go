@@ -223,10 +223,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			} else {
 				r.ChangeVolume(-1)
 			}
-		case "]":
-			r.ChangeInputGain(5)
-		case "[":
-			r.ChangeInputGain(-5)
 		case "i":
 			r.Cycle(true)
 		case "o":
@@ -534,11 +530,10 @@ func helpLines() []string {
 		{"tab  ← →  h l", "next / previous panel"},
 		{"↑ ↓  j k", "move in the focused panel"},
 		{"enter  space", "play the part under the cursor (Rig: change the setting)"},
-		{"- +", "output volume (Rig: change the setting under the cursor)"},
+		{"- +", "output volume (Rig: change the setting under the cursor, e.g. GAIN)"},
 		{"t", "tuner (mutes the output)"},
 		{"r", "start / stop recording (saved to ~/Music/lazyguitarist)"},
 		{"b", "bypass: hear the dry guitar"},
-		{"[ ]", "input gain of the guitar dongle"},
 		{"i  o", "next input / output device"},
 		{"L", "buffer size (latency)"},
 		{"?", "this list"},
